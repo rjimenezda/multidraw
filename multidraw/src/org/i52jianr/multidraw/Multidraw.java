@@ -1,33 +1,27 @@
 package org.i52jianr.multidraw;
 
-import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.Game;
 
-public class Multidraw implements ApplicationListener {
+public class Multidraw extends Game {
+	
+	private MultidrawMenuScreen menuScreen;
+	private MultidrawGameScreen gameScreen;
+	
 	@Override
 	public void create() {
+		menuScreen = new MultidrawMenuScreen(this);
+		gameScreen = new MultidrawGameScreen(this);
+		setScreen(gameScreen);
+	}
+	
+	public void setGameScreen() {
+		getScreen().dispose();
+		setScreen(gameScreen);
+	}
+	
+	public void setMenuScreen() {
+		// getScreen().dispose();
+		setScreen(menuScreen);
 	}
 
-	@Override
-	public void dispose() {
-	}
-
-	@Override
-	public void render() {
-		Gdx.gl.glClearColor(1, 0, 1, 1);
-		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-	}
-
-	@Override
-	public void resize(int width, int height) {
-	}
-
-	@Override
-	public void pause() {
-	}
-
-	@Override
-	public void resume() {
-	}
 }
