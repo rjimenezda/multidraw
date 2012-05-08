@@ -70,7 +70,7 @@ public class MultidrawGameScreen implements Screen {
 			}
 			
 		} else {
-			drawingArea.removeLast();
+			 drawingArea.removeLast();
 		}
 		
 //		if (Gdx.input.isKeyPressed(Input.Keys.B)) {
@@ -115,6 +115,22 @@ public class MultidrawGameScreen implements Screen {
 					drawingArea.setColor(Color.BLUE);
 				} else if (character == 'q') {
 					drawingArea.setEraseMode();
+				} else if (character == 'r') {
+					drawingArea.setColor(Color.RED);
+				} else if (character == '1') {
+					drawingArea.setBrush(Brushes.pixel);
+				} else if (character == '2') {
+					drawingArea.setBrush(Brushes.cross);
+				} else if (character == '3') {
+					drawingArea.setBrush(Brushes.round);
+				} else if (character == '4') {
+					drawingArea.setBrush(Brushes.slope3);
+				} else if (character == '5') {
+					drawingArea.setBrush(Brushes.slope5);
+				} else if (character == '6') {
+					drawingArea.setBrush(Brushes.square3);
+				} else if (character == '7') {
+					drawingArea.setBrush(Brushes.square5);
 				}
 				
 				return true;

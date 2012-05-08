@@ -15,6 +15,7 @@ public class DrawingArea {
 	private Color frontColor = Color.RED;
 	private int lastx = -1;
 	private int lasty = -1;
+	private Brush currentBrush;
 	
 	public DrawingArea(int size) {
 		this();
@@ -27,6 +28,7 @@ public class DrawingArea {
 		Pixmap.setFilter(Filter.NearestNeighbour);
 		texture = new Texture(pixmap);
 		size = 256;
+		currentBrush = Brushes.slope5;
 		
 		pixmap.setColor(backgroundColor);
 		pixmap.fill();
@@ -35,35 +37,31 @@ public class DrawingArea {
 	}
 	
 	public void drawAt(int x, int y) {
-		int derp = 2;
+		int brushSize = currentBrush.getSize();
+		int[][] brush = currentBrush.getBrush();
+		
 		minipixmap.setColor(frontColor);
 		if (lastx != -1 && lasty != -1) {
-			
-			for (int i = -derp; i < derp+1; i++) {
-				for (int j = -derp; j < derp+1; j++) {
-					minipixmap.drawLine(lastx+i, lasty+j, x+i, y+j);				
-					//minipixmap.drawLine(lastx+i, lasty+i, x+i, y+i);
-					//minipixmap.drawLine(lastx, lasty+i, x, y+i);	
+			for (int i = -brushSize; i < brushSize+1; i++) {
+				for (int j = -brushSize; j < brushSize+1; j++) {
+					if (brush[brushSize+i][brushSize+j] != 0) {
+						minipixmap.drawLine(lastx+i, lasty+j, x+i, y+j);	
+					}				
 				}
 			}
-			
-//			minipixmap.drawLine(lastx, lasty, x, y);
-//			minipixmap.drawLine(lastx-1, lasty, x-1, y);
-//			minipixmap.drawLine(lastx+1, lasty, x+1, y);
-//			minipixmap.drawLine(lastx, lasty+1, x, y+1);
-//			minipixmap.drawLine(lastx, lasty-1, x, y-1);
-//			minipixmap.drawLine(lastx+1, lasty+1, x+1, y+1);
-//			minipixmap.drawLine(lastx-1, lasty-1, x-1, y-1);
 		} else {
-//			minipixmap.drawPixel(x, y+1);
-//			minipixmap.drawPixel(x, y);
-//			minipixmap.drawPixel(x, y-1);
+			
+			for (int i = -brushSize; i < brushSize+1; i++) {
+				for (int j = -brushSize; j < brushSize+1; j++) {
+					if (brush[brushSize+i][brushSize+j] != 0) {
+						minipixmap.drawPixel(x+i, y+j);	
+					}				
+				}
+			}
 		}
 		pixmap.drawPixmap(minipixmap, 0, 0, size, size, 0, 0, 256, 256);
 		lastx = x;
 		lasty = y;
-//		pixmap.setColor(color);
-//		pixmap.drawPixel(x, y);
 	}
 	
 	public void clear() {
@@ -107,5 +105,8 @@ public class DrawingArea {
 		lastx = lasty = -1;
 	}
 	
+	public void setBrush(Brush brush) {
+		this.currentBrush = brush;
+	}
 
 }
