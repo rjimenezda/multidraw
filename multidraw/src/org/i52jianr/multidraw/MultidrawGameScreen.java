@@ -8,6 +8,9 @@ import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 
 public class MultidrawGameScreen implements Screen {
 
@@ -24,8 +27,9 @@ public class MultidrawGameScreen implements Screen {
 	
 	private float scaleX = 1.0f;
 	private float scaleY = 1.0f;
-	private float offset_x_f = 31.0f;
-	private float offset_y_f = 220.0f;
+	private Stage stage;
+	private Slider red_slider;
+	private Skin skin;
 	
 	public MultidrawGameScreen(Multidraw multidrawGame) {
 		game = multidrawGame;
@@ -35,15 +39,18 @@ public class MultidrawGameScreen implements Screen {
 	public void render(float delta) {
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-		// drawingArea.clear();
 
 		handleInput();
+		//drawingArea.drawAt(5, 5);
 		
 		cam.update();
 		batch.setProjectionMatrix(cam.combined);
 		batch.begin();
 		batch.draw(drawingArea.getBindedTexture(), OFFSET_X, OFFSET_Y);
 		batch.end();
+		
+		stage.act(delta);
+		stage.draw();
 		
 	}
 
@@ -62,6 +69,8 @@ public class MultidrawGameScreen implements Screen {
 				drawingArea.normDraw(touchx - OFFSET_X, touchy - OFFSET_Y);
 			}
 			
+		} else {
+			drawingArea.removeLast();
 		}
 		
 //		if (Gdx.input.isKeyPressed(Input.Keys.B)) {
@@ -75,12 +84,8 @@ public class MultidrawGameScreen implements Screen {
 
 	@Override
 	public void resize(int width, int height) {
-		
         scaleX = ((float)ORIGINAL_WIDTH) / width;
         scaleY = ((float)ORIGINAL_HEIGHT) / height;
-        
-        offset_x_f = OFFSET_X * scaleX;
-        offset_y_f = OFFSET_Y * scaleY;
 	}
 
 	@Override
@@ -91,7 +96,13 @@ public class MultidrawGameScreen implements Screen {
 		drawingArea.setColor(Color.BLUE);
 		batch = new SpriteBatch();
 		position = 0;
-		
+		stage = new Stage(320, 480, true, batch);
+		Gdx.input.setInputProcessor(stage);
+//        skin = new Skin(Gdx.files.internal("uiskin.json"), Gdx.files.internal("uiskin.png"));
+//		
+//		red_slider = new Slider(0, 10, 1, skin.getStyle(SliderStyle.class), "slider");
+//		stage.addActor(red_slider);
+//		red_slider.y = 30;
 		
 		// This snippet allows virtual keyboard processing
 		Gdx.input.setInputProcessor(new InputAdapter() {
@@ -100,6 +111,10 @@ public class MultidrawGameScreen implements Screen {
 				
 				if (character == 'g') {
 					drawingArea.setColor(Color.GREEN);
+				} else if (character == 'b') {
+					drawingArea.setColor(Color.BLUE);
+				} else if (character == 'q') {
+					drawingArea.setEraseMode();
 				}
 				
 				return true;
@@ -112,7 +127,6 @@ public class MultidrawGameScreen implements Screen {
 
 	@Override
 	public void hide() {
-		
 	}
 
 	@Override

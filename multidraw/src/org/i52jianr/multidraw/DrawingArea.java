@@ -13,6 +13,8 @@ public class DrawingArea {
 	private int size;
 	private Color backgroundColor = Color.BLACK;
 	private Color frontColor = Color.RED;
+	private int lastx = -1;
+	private int lasty = -1;
 	
 	public DrawingArea(int size) {
 		this();
@@ -33,9 +35,33 @@ public class DrawingArea {
 	}
 	
 	public void drawAt(int x, int y) {
+		int derp = 2;
 		minipixmap.setColor(frontColor);
-		minipixmap.drawPixel(x, y);
+		if (lastx != -1 && lasty != -1) {
+			
+			for (int i = -derp; i < derp+1; i++) {
+				for (int j = -derp; j < derp+1; j++) {
+					minipixmap.drawLine(lastx+i, lasty+j, x+i, y+j);				
+					//minipixmap.drawLine(lastx+i, lasty+i, x+i, y+i);
+					//minipixmap.drawLine(lastx, lasty+i, x, y+i);	
+				}
+			}
+			
+//			minipixmap.drawLine(lastx, lasty, x, y);
+//			minipixmap.drawLine(lastx-1, lasty, x-1, y);
+//			minipixmap.drawLine(lastx+1, lasty, x+1, y);
+//			minipixmap.drawLine(lastx, lasty+1, x, y+1);
+//			minipixmap.drawLine(lastx, lasty-1, x, y-1);
+//			minipixmap.drawLine(lastx+1, lasty+1, x+1, y+1);
+//			minipixmap.drawLine(lastx-1, lasty-1, x-1, y-1);
+		} else {
+//			minipixmap.drawPixel(x, y+1);
+//			minipixmap.drawPixel(x, y);
+//			minipixmap.drawPixel(x, y-1);
+		}
 		pixmap.drawPixmap(minipixmap, 0, 0, size, size, 0, 0, 256, 256);
+		lastx = x;
+		lasty = y;
 //		pixmap.setColor(color);
 //		pixmap.drawPixel(x, y);
 	}
@@ -75,6 +101,10 @@ public class DrawingArea {
 	
 	public void setEraseMode() {
 		setColor(backgroundColor);
+	}
+
+	public void removeLast() {
+		lastx = lasty = -1;
 	}
 	
 
