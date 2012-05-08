@@ -16,6 +16,13 @@ public final class Brushes {
 																{1, 1, 1}, 
 																{0, 1, 0} 
 																});
+	
+	// Small cross that has a less "squarish" feel
+	public static Brush crossSmooth = new Brush(1, new float[][]{ 	{0,		0.5f, 	0}, 
+																	{0.5f, 	1, 		0.5f}, 
+																	{0, 	0.5f, 	0} 
+																	});
+	
 	// Ugly 3 x 3 square
 	public static Brush square3 = new Brush(1, new float[][]{ 	{1, 1, 1}, 
 																{1, 1, 1}, 

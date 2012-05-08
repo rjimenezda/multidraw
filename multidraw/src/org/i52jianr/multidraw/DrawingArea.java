@@ -66,12 +66,6 @@ public class DrawingArea {
 		lasty = y;
 	}
 	
-	public void clear() {
-		minipixmap.setColor(Color.BLACK);
-		minipixmap.fill();
-		pixmap.drawPixmap(minipixmap, 0, 0, size, size, 0, 0, 256, 256);
-	}
-	
 	public Texture getBindedTexture() {
 		texture.draw(pixmap, 0, 0);
 		texture.bind();
@@ -109,6 +103,13 @@ public class DrawingArea {
 	
 	public void setBrush(Brush brush) {
 		this.currentBrush = brush;
+	}
+	
+	public void clearArea() {
+		minipixmap.setColor(backgroundColor);
+		minipixmap.fill();
+		pixmap.drawPixmap(minipixmap, 0, 0, size, size, 0, 0, 256, 256);
+		minipixmap.setColor(frontColor);
 	}
 
 }
