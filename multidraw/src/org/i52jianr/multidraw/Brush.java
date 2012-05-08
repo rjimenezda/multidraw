@@ -2,9 +2,9 @@ package org.i52jianr.multidraw;
 
 public class Brush {
 	int size;
-	int[][] brush;
+	float[][] brush;
 	
-	public Brush(int size, int[][] brush) {
+	public Brush(int size, float[][] brush) {
 		this.size = size;
 		this.brush = brush;
 	}
@@ -13,7 +13,7 @@ public class Brush {
 		return size;
 	}
 	
-	public int[][] getBrush() {
+	public float[][] getBrush() {
 		return brush;
 	}
 }

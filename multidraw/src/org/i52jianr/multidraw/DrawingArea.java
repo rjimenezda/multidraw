@@ -28,7 +28,7 @@ public class DrawingArea {
 		Pixmap.setFilter(Filter.NearestNeighbour);
 		texture = new Texture(pixmap);
 		size = 256;
-		currentBrush = Brushes.slope5;
+		currentBrush = Brushes.round;
 		
 		pixmap.setColor(backgroundColor);
 		pixmap.fill();
@@ -38,13 +38,14 @@ public class DrawingArea {
 	
 	public void drawAt(int x, int y) {
 		int brushSize = currentBrush.getSize();
-		int[][] brush = currentBrush.getBrush();
+		float[][] brush = currentBrush.getBrush();
 		
 		minipixmap.setColor(frontColor);
 		if (lastx != -1 && lasty != -1) {
 			for (int i = -brushSize; i < brushSize+1; i++) {
 				for (int j = -brushSize; j < brushSize+1; j++) {
 					if (brush[brushSize+i][brushSize+j] != 0) {
+						minipixmap.setColor(frontColor.r, frontColor.g, frontColor.b, brush[brushSize+i][brushSize+j]);
 						minipixmap.drawLine(lastx+i, lasty+j, x+i, y+j);	
 					}				
 				}
@@ -54,6 +55,7 @@ public class DrawingArea {
 			for (int i = -brushSize; i < brushSize+1; i++) {
 				for (int j = -brushSize; j < brushSize+1; j++) {
 					if (brush[brushSize+i][brushSize+j] != 0) {
+						minipixmap.setColor(frontColor.r, frontColor.g, frontColor.b, brush[brushSize+i][brushSize+j]);
 						minipixmap.drawPixel(x+i, y+j);	
 					}				
 				}

@@ -131,6 +131,8 @@ public class MultidrawGameScreen implements Screen {
 					drawingArea.setBrush(Brushes.square3);
 				} else if (character == '7') {
 					drawingArea.setBrush(Brushes.square5);
+				} else if (character == '8') {
+					drawingArea.setBrush(Brushes.roundSmooth);
 				}
 				
 				return true;
