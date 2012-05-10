@@ -10,11 +10,17 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
+import com.badlogic.gdx.utils.Scaling;
 
 public class MultidrawGameScreen implements Screen {
 
@@ -29,13 +35,13 @@ public class MultidrawGameScreen implements Screen {
 	private final int ORIGINAL_HEIGHT = 480;
 	
 	private int red_x = 25;
-	private int red_y = 60;
+	private int red_y = 80;
 	
 	private int green_x = 25;
-	private int green_y = 35;
+	private int green_y = 50;
 	
 	private int blue_x = 25;
-	private int blue_y = 10;
+	private int blue_y = 20;
 	
 	private float scaleX = 1.0f;
 	private float scaleY = 1.0f;
@@ -66,7 +72,7 @@ public class MultidrawGameScreen implements Screen {
 		batch.setProjectionMatrix(cam.combined);
 		batch.begin();
 		batch.draw(drawingArea.getBindedTexture(), OFFSET_X, OFFSET_Y);
-		batch.draw(colorPreviewTexture, 200, 400);
+		batch.draw(colorPreviewTexture, 200, 390);
 		batch.end();
 		
 		stage.act(delta);
@@ -100,11 +106,45 @@ public class MultidrawGameScreen implements Screen {
 	@Override
 	public void show() {
 		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		cam.setToOrtho(true, 320, 480);
-		drawingArea = new DrawingArea(128);
+cam.setToOrtho(true, 320, 480);																																					
+		drawingArea = new DrawingArea(256);
 		drawingArea.setColor(Color.BLUE);
 		batch = new SpriteBatch();
-		stage = new Stage(320, 480, true, batch);
+		stage = new Stage(320, 480, true, batch) {
+			public boolean keyTyped(char character) {
+					if (character == 'g') {
+						drawingArea.setColor(Color.GREEN);
+					} else if (character == 'b') {
+						drawingArea.setColor(Color.BLUE);
+					} else if (character == 'q') {
+						drawingArea.setEraseMode();
+					} else if (character == 'r') {
+						drawingArea.setColor(Color.RED);
+					} else if (character == '1') {
+						drawingArea.setBrush(Brushes.pixel);
+					} else if (character == '2') {
+						drawingArea.setBrush(Brushes.cross);
+					} else if (character == '3') {
+						drawingArea.setBrush(Brushes.round);
+					} else if (character == '4') {
+						drawingArea.setBrush(Brushes.slope3);
+					} else if (character == '5') {
+						drawingArea.setBrush(Brushes.slope5);
+					} else if (character == '6') {
+						drawingArea.setBrush(Brushes.square3);
+					} else if (character == '7') {
+						drawingArea.setBrush(Brushes.square5);
+					} else if (character == '8') {
+						drawingArea.setBrush(Brushes.roundSmooth);
+					} else if (character == '9') {
+						drawingArea.setBrush(Brushes.crossSmooth);
+					} else if (character == '!') {
+						drawingArea.clearArea();
+					}
+					
+					return true;
+				}
+			};
 		
 		Gdx.input.setInputProcessor(stage);
 		AssetManager manager = new AssetManager();
@@ -116,46 +156,7 @@ public class MultidrawGameScreen implements Screen {
 		
 		Skin skin = manager.get("uiskin.json", Skin.class);
 		setupUI(skin);
-		
-		// This snippet allows virtual keyboard processing
-//		Gdx.input.setInputProcessor(new InputAdapter() {
-//			@Override
-//			public boolean keyTyped(char character) {
-//				
-//				if (character == 'g') {
-//					drawingArea.setColor(Color.GREEN);
-//				} else if (character == 'b') {
-//					drawingArea.setColor(Color.BLUE);
-//				} else if (character == 'q') {
-//					drawingArea.setEraseMode();
-//				} else if (character == 'r') {
-//					drawingArea.setColor(Color.RED);
-//				} else if (character == '1') {
-//					drawingArea.setBrush(Brushes.pixel);
-//				} else if (character == '2') {
-//					drawingArea.setBrush(Brushes.cross);
-//				} else if (character == '3') {
-//					drawingArea.setBrush(Brushes.round);
-//				} else if (character == '4') {
-//					drawingArea.setBrush(Brushes.slope3);
-//				} else if (character == '5') {
-//					drawingArea.setBrush(Brushes.slope5);
-//				} else if (character == '6') {
-//					drawingArea.setBrush(Brushes.square3);
-//				} else if (character == '7') {
-//					drawingArea.setBrush(Brushes.square5);
-//				} else if (character == '8') {
-//					drawingArea.setBrush(Brushes.roundSmooth);
-//				} else if (character == '9') {
-//					drawingArea.setBrush(Brushes.crossSmooth);
-//				} else if (character == '!') {
-//					drawingArea.clearArea();
-//				}
-//				
-//				return true;
-//			}
-//		});
-		
+	
 		Gdx.input.setInputProcessor(stage);
 		
 		Gdx.input.setOnscreenKeyboardVisible(true);
@@ -169,6 +170,28 @@ public class MultidrawGameScreen implements Screen {
 		green_label.setText("G");
 		Label blue_label = new Label(skin);
 		blue_label.setText("B");
+		
+		Button softRound = brushButtonFactory(Brushes.roundSmooth, skin);
+		Button hardRound = brushButtonFactory(Brushes.round, skin);
+		Button slope5 = brushButtonFactory(Brushes.slope5, skin);
+		Button square5 = brushButtonFactory(Brushes.square5, skin);
+
+		stage.addActor(softRound);
+		stage.addActor(hardRound);
+		stage.addActor(slope5);
+		stage.addActor(square5);
+		
+		softRound.y = red_y + 40;
+		softRound.x = red_x;
+		
+		hardRound.y = red_y + 40;
+		hardRound.x = red_x + 40;
+
+		slope5.y = red_y + 40;
+		slope5.x = red_x + 80;
+		
+		square5.y = red_y + 40;
+		square5.x = red_x + 120;
 		
 		red_slider = new Slider(0, 255, 1, skin.getStyle(SliderStyle.class), "slider");
 		green_slider = new Slider(0, 255, 1, skin.getStyle(SliderStyle.class), "slider");
@@ -199,7 +222,7 @@ public class MultidrawGameScreen implements Screen {
 		
 		red_slider.setValue(192);
 		green_slider.setValue(168);
-		blue_slider.setValue(0);
+		blue_slider.setValue(172);
 		
 		// Maybe it's not necessary to use RGBA?
 		colorPreview = new Pixmap(64, 64, Pixmap.Format.RGBA8888);
@@ -238,6 +261,20 @@ public class MultidrawGameScreen implements Screen {
 		colorPreviewTexture.draw(colorPreview, 0, 0);
 		colorPreviewTexture.bind();
 		drawingArea.setColor(color);
+	}
+	
+	private Button brushButtonFactory(final Brush brush, Skin skin) {
+		Image image = new Image(brush.getTexture(), Scaling.fill);
+		Button button = new Button(image, skin.getStyle(ButtonStyle.class));
+		button.setClickListener(new ClickListener() {
+			
+			@Override
+			public void click(Actor actor, float x, float y) {
+				drawingArea.setBrush(brush);
+			}
+		});
+		
+		return button;
 	}
 
 }
