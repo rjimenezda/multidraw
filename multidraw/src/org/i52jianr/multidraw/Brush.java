@@ -23,10 +23,8 @@ public class Brush {
 		return brush;
 	}
 	
-	public Texture getTexture() {
+	public Pixmap getPixmap() {
 		Pixmap pix = new Pixmap(brush.length, brush.length, Format.RGB888);
-		Texture tex = new Texture(32, 32, Format.RGBA8888);
-		
 		for (int i = 0; i < brush.length; i++) {
 			for (int j = 0; j < brush.length; j++) {
 				pix.setColor(new Color(brush[i][j], brush[i][j], brush[i][j], brush[i][j]));
@@ -38,8 +36,6 @@ public class Brush {
 		Pixmap.setFilter(Filter.NearestNeighbour);
 		canvas.drawPixmap(pix, 0, 0, brush.length, brush.length, 0, 0, 32, 32);
 		
-		tex.draw(canvas, 0, 0);
-		
-		return tex;
+		return canvas;
 	}
 }

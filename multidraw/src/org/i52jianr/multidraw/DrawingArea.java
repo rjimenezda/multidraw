@@ -4,12 +4,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Pixmap.Filter;
 import com.badlogic.gdx.graphics.Pixmap.Format;
-import com.badlogic.gdx.graphics.Texture;
 
 public class DrawingArea {
 	private Pixmap pixmap;
 	private Pixmap minipixmap;
-	private Texture texture;
 	private int size;
 	private Color backgroundColor = Color.BLACK;
 	private Color frontColor = Color.RED;
@@ -23,17 +21,14 @@ public class DrawingArea {
 	}
 	
 	public DrawingArea() {
-		minipixmap = new Pixmap(256, 256, Format.RGB888);
-		pixmap = new Pixmap(256, 256, Format.RGB888);
 		Pixmap.setFilter(Filter.NearestNeighbour);
-		texture = new Texture(pixmap);
+		minipixmap = new Pixmap(256, 256, Format.RGBA8888);
+		pixmap = new Pixmap(256, 256, Format.RGBA8888);
 		size = 256;
 		currentBrush = Brushes.round;
 		
 		pixmap.setColor(backgroundColor);
 		pixmap.fill();
-		texture.draw(pixmap, 0, 0);
-		texture.bind();
 	}
 	
 	public void drawAt(int x, int y) {
@@ -66,23 +61,13 @@ public class DrawingArea {
 		lasty = y;
 	}
 	
-	public Texture getBindedTexture() {
-		texture.draw(pixmap, 0, 0);
-		texture.bind();
-		return texture;
+	public Pixmap getPixmap() {
+		return pixmap;
 	}
 
 	public void dispose() {
 		pixmap.dispose();
-		texture.dispose();
-	}
-	
-	public int getWidth() {
-		return texture.getWidth();
-	}
-	
-	public int getHeight() {
-		return texture.getHeight();
+		minipixmap.dispose();
 	}
 
 	public void normDraw(int x, int y) {

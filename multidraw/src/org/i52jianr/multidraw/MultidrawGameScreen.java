@@ -1,13 +1,14 @@
 package org.i52jianr.multidraw;
 
+import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -22,10 +23,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.utils.Scaling;
 
-public class MultidrawGameScreen implements Screen {
+public class MultidrawGameScreen implements ApplicationListener {
 
     private OrthographicCamera cam;
-	private Multidraw game;
 	private DrawingArea drawingArea;
 	private SpriteBatch batch;
 	
@@ -54,64 +54,19 @@ public class MultidrawGameScreen implements Screen {
 	private Pixmap colorPreview;
 	private Texture colorPreviewTexture;
 	
-	public MultidrawGameScreen(Multidraw multidrawGame) {
-		game = multidrawGame;
+	public MultidrawGameScreen() {
 	}
-
+	
 	@Override
-	public void render(float delta) {
-		Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-		
-		
-		// We could use event handlers in case of performance drop 
-		setSelectedColor();
-		handleInput();
-		
-		cam.update();
-		batch.setProjectionMatrix(cam.combined);
-		batch.begin();
-		batch.draw(drawingArea.getBindedTexture(), OFFSET_X, OFFSET_Y);
-		batch.draw(colorPreviewTexture, 200, 390);
-		batch.end();
-		
-		stage.act(delta);
-		stage.draw();
-	}
-
-	private void handleInput() {		
-		if (Gdx.input.isTouched()) {
-			int touchx = Gdx.input.getX();
-			int touchy = Gdx.input.getY();
-			
-			touchx = Math.round(touchx * scaleX);
-			touchy = Math.round(touchy * scaleY);
-			
-			Rectangle rect = new Rectangle(31, OFFSET_Y, 256, 256);
-			
-			if (rect.contains(touchx, touchy)) {
-				drawingArea.normDraw(touchx - OFFSET_X, touchy - OFFSET_Y);
-			}
-		} else {
-			 drawingArea.removeLast();
-		}
-	}
-
-	@Override
-	public void resize(int width, int height) {
-        scaleX = ((float)ORIGINAL_WIDTH) / width;
-        scaleY = ((float)ORIGINAL_HEIGHT) / height;
-	}
-
-	@Override
-	public void show() {
+	public void create() {
 		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-cam.setToOrtho(true, 320, 480);																																					
+		cam.setToOrtho(true, 320, 480);																																					
 		drawingArea = new DrawingArea(256);
 		drawingArea.setColor(Color.BLUE);
 		batch = new SpriteBatch();
 		stage = new Stage(320, 480, true, batch) {
 			public boolean keyTyped(char character) {
+					/* DEBUG */
 					if (character == 'g') {
 						drawingArea.setColor(Color.GREEN);
 					} else if (character == 'b') {
@@ -148,19 +103,72 @@ cam.setToOrtho(true, 320, 480);
 		
 		Gdx.input.setInputProcessor(stage);
 		AssetManager manager = new AssetManager();
-		// manager.load("uiskin.png", Texture.class);
-		manager.load("uiskin.json", Skin.class);
+		manager.load("data/uiskin.json", Skin.class);
 		
 		// While things yet to be loaded...
 		while(!manager.update());
 		
-		Skin skin = manager.get("uiskin.json", Skin.class);
+		Skin skin = manager.get("data/uiskin.json", Skin.class);
 		setupUI(skin);
 	
 		Gdx.input.setInputProcessor(stage);
 		
 		Gdx.input.setOnscreenKeyboardVisible(true);
+	}
+
+	@Override
+	public void render() {
+		Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		
+		// We could use event handlers in case of performance drop 
+		setSelectedColor();
+		handleInput();
+		
+		Texture texture = new Texture(drawingArea.getPixmap());
+		texture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		texture.bind();
+		
+		Texture colortext = new Texture(colorPreview);
+		colortext.bind();
+		
+		cam.update();
+		batch.setProjectionMatrix(cam.combined);
+		batch.begin();
+		batch.draw(texture, OFFSET_X, OFFSET_Y);
+		batch.draw(colortext, 200, 390);
+		batch.end();
+		
+		stage.act(Gdx.graphics.getDeltaTime());
+		stage.draw();
+		
+		texture.dispose();
+		colortext.dispose();
+	}
+	
+
+	private void handleInput() {		
+		if (Gdx.input.isTouched()) {
+			int touchx = Gdx.input.getX();
+			int touchy = Gdx.input.getY();
+			
+			touchx = Math.round(touchx * scaleX);
+			touchy = Math.round(touchy * scaleY);
+			
+			Rectangle rect = new Rectangle(31, OFFSET_Y, 256, 256);
+			
+			if (rect.contains(touchx, touchy)) {
+				drawingArea.normDraw(touchx - OFFSET_X, touchy - OFFSET_Y);
+			}
+		} else {
+			 drawingArea.removeLast();
+		}
+	}
+
+	@Override
+	public void resize(int width, int height) {
+        scaleX = ((float)ORIGINAL_WIDTH) / width;
+        scaleY = ((float)ORIGINAL_HEIGHT) / height;
 	}
 
 	private void setupUI(Skin skin) {
@@ -231,10 +239,6 @@ cam.setToOrtho(true, 320, 480);
 	}
 
 	@Override
-	public void hide() {
-	}
-
-	@Override
 	public void pause() {
 		
 	}
@@ -258,13 +262,14 @@ cam.setToOrtho(true, 320, 480);
 	private void setSelectedColor(Color color) {
 		colorPreview.setColor(color);
 		colorPreview.fill();
-		colorPreviewTexture.draw(colorPreview, 0, 0);
-		colorPreviewTexture.bind();
 		drawingArea.setColor(color);
 	}
 	
 	private Button brushButtonFactory(final Brush brush, Skin skin) {
-		Image image = new Image(brush.getTexture(), Scaling.fill);
+		Texture text = new Texture(brush.getPixmap());
+		text.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		text.bind();
+		Image image = new Image(text, Scaling.fill);
 		Button button = new Button(image, skin.getStyle(ButtonStyle.class));
 		button.setClickListener(new ClickListener() {
 			
