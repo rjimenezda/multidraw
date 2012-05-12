@@ -81,6 +81,10 @@ public class DrawingArea {
 	public void setEraseMode() {
 		setColor(backgroundColor);
 	}
+	
+	public void setDrawMode() {
+		setColor(frontColor);
+	}
 
 	public void removeLast() {
 		lastx = lasty = -1;

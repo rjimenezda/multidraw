@@ -53,6 +53,11 @@ public class MultidrawGameScreen implements ApplicationListener {
 	private Slider green_slider;
 	private Pixmap colorPreview;
 	private Texture colorPreviewTexture;
+	private Button softRound;
+	private Button hardRound;
+	private Button slope5;
+	private Button square5;
+	private Skin skin;
 	
 	public MultidrawGameScreen() {
 	}
@@ -108,7 +113,7 @@ public class MultidrawGameScreen implements ApplicationListener {
 		// While things yet to be loaded...
 		while(!manager.update());
 		
-		Skin skin = manager.get("data/uiskin.json", Skin.class);
+		skin = manager.get("data/uiskin.json", Skin.class);
 		setupUI(skin);
 	
 		Gdx.input.setInputProcessor(stage);
@@ -179,31 +184,20 @@ public class MultidrawGameScreen implements ApplicationListener {
 		Label blue_label = new Label(skin);
 		blue_label.setText("B");
 		
-		Button softRound = brushButtonFactory(Brushes.roundSmooth, skin);
-		Button hardRound = brushButtonFactory(Brushes.round, skin);
-		Button slope5 = brushButtonFactory(Brushes.slope5, skin);
-		Button square5 = brushButtonFactory(Brushes.square5, skin);
+		softRound = brushButtonFactory(Brushes.roundSmooth, skin, red_x, red_y + 40);
+		hardRound = brushButtonFactory(Brushes.round, skin, red_x + 40, red_y + 40);
+		slope5 = brushButtonFactory(Brushes.slope5, skin, red_x + 80, red_y + 40);
+		square5 = brushButtonFactory(Brushes.square5, skin, red_x + 120, red_y + 40);
 
 		stage.addActor(softRound);
 		stage.addActor(hardRound);
 		stage.addActor(slope5);
 		stage.addActor(square5);
 		
-		softRound.y = red_y + 40;
-		softRound.x = red_x;
-		
-		hardRound.y = red_y + 40;
-		hardRound.x = red_x + 40;
-
-		slope5.y = red_y + 40;
-		slope5.x = red_x + 80;
-		
-		square5.y = red_y + 40;
-		square5.x = red_x + 120;
-		
 		red_slider = new Slider(0, 255, 1, skin.getStyle(SliderStyle.class), "slider");
 		green_slider = new Slider(0, 255, 1, skin.getStyle(SliderStyle.class), "slider");
 		blue_slider = new Slider(0, 255, 1, skin.getStyle(SliderStyle.class), "slider");
+		
 		stage.addActor(red_slider);
 		stage.addActor(green_slider);
 		stage.addActor(blue_slider);
@@ -227,7 +221,7 @@ public class MultidrawGameScreen implements ApplicationListener {
 		blue_label.x = blue_x - 15;
 		blue_label.y = blue_y + 6;
 		
-		
+		// Random Initial values
 		red_slider.setValue(192);
 		green_slider.setValue(168);
 		blue_slider.setValue(172);
@@ -240,12 +234,27 @@ public class MultidrawGameScreen implements ApplicationListener {
 
 	@Override
 	public void pause() {
-		
+		Gdx.app.log("INFO", "Pausing...");
 	}
 
 	@Override
 	public void resume() {
+		Gdx.app.log("INFO", "Resuming...");
 		
+		stage.removeActor(softRound);
+		stage.removeActor(hardRound);
+		stage.removeActor(slope5);
+		stage.removeActor(square5);
+		
+		softRound = brushButtonFactory(Brushes.roundSmooth, skin, red_x, red_y + 40);
+		hardRound = brushButtonFactory(Brushes.round, skin, red_x + 40, red_y + 40);
+		slope5 = brushButtonFactory(Brushes.slope5, skin, red_x + 80, red_y + 40);
+		square5 = brushButtonFactory(Brushes.square5, skin, red_x + 120, red_y + 40);
+		
+		stage.addActor(softRound);
+		stage.addActor(hardRound);
+		stage.addActor(slope5);
+		stage.addActor(square5);
 	}
 
 	@Override
@@ -265,7 +274,7 @@ public class MultidrawGameScreen implements ApplicationListener {
 		drawingArea.setColor(color);
 	}
 	
-	private Button brushButtonFactory(final Brush brush, Skin skin) {
+	private Button brushButtonFactory(final Brush brush, Skin skin, int x, int y) {
 		Texture text = new Texture(brush.getPixmap());
 		text.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		text.bind();
@@ -278,6 +287,9 @@ public class MultidrawGameScreen implements ApplicationListener {
 				drawingArea.setBrush(brush);
 			}
 		});
+		
+		button.x = x;
+		button.y = y;
 		
 		return button;
 	}
