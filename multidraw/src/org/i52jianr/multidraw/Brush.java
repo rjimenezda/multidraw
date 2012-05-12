@@ -28,7 +28,7 @@ public class Brush {
 		for (int i = 0; i < brush.length; i++) {
 			for (int j = 0; j < brush.length; j++) {
 				pix.setColor(new Color(brush[i][j], brush[i][j], brush[i][j], brush[i][j]));
-				pix.drawPixel(brush.length - i -1, j);
+				pix.drawPixel(j, i);
 			}
 		}
 		

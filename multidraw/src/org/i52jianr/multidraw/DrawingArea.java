@@ -49,17 +49,17 @@ public class DrawingArea {
 		if (lastx != -1 && lasty != -1) {
 			for (int i = -brushSize; i < brushSize+1; i++) {
 				for (int j = -brushSize; j < brushSize+1; j++) {
-					if (brush[brushSize+i][brushSize+j] != 0) {
-						minipixmap.setColor(color.r, color.g, color.b, brush[brushSize+i][brushSize+j]);
+					if (brush[brushSize-j][brushSize+i] != 0) {
+						minipixmap.setColor(color.r, color.g, color.b, brush[brushSize-j][brushSize+i]);
 						minipixmap.drawLine(lastx+i, lasty+j, x+i, y+j);	
-					}				
+					}			
 				}
 			}
 		} else {
 			for (int i = -brushSize; i < brushSize+1; i++) {
 				for (int j = -brushSize; j < brushSize+1; j++) {
-					if (brush[brushSize+i][brushSize+j] != 0) {
-						minipixmap.setColor(color.r, color.g, color.b, brush[brushSize+i][brushSize+j]);
+					if (brush[brushSize-j][brushSize+i] != 0) {
+						minipixmap.setColor(color.r, color.g, color.b, brush[brushSize-j][brushSize+i]);
 						minipixmap.drawPixel(x+i, y+j);	
 					}				
 				}

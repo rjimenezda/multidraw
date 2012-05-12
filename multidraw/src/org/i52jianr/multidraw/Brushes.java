@@ -43,6 +43,13 @@ public final class Brushes {
 																{0, 0, 0, 0, 1} 
 																});
 	
+	public static Brush test = new Brush(2, new float[][]{  	{1, 0, 1, 0, 1}, 
+																{0, 1, 1, 1, 0}, 
+																{0, 0, 1, 0, 0}, 
+																{0, 1, 1, 1, 0}, 
+																{1, 0, 1, 0, 1} 
+																});
+	
 	// Soft brush test, delicious
 	public static Brush smooth5 = new Brush(2, new float[][]{  	{0.0f,	0.5f, 	0.5f, 0.5f, 0.0f}, 
 																	{0.5f, 	0.8f, 	1.0f, 0.8f, 0.5f}, 

@@ -103,7 +103,7 @@ public class MultidrawGameScreen implements ApplicationListener {
 		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.square11, red_x + 180, red_y + 35));
 		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.square15, red_x + 225, red_y + 35));
 		
-		canvasSize = 128; // Default
+		canvasSize = 16; // Default
 	}
 	
 	public MultidrawGameScreen(ArrayList<BrushButtonDescriptor> list, int size) {
