@@ -1,5 +1,7 @@
 package org.i52jianr.multidraw;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
@@ -22,6 +24,31 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.utils.Scaling;
+
+class BrushButtonDescriptor {
+	private Brush brush;
+	private int x;
+	private int y;
+	
+	public BrushButtonDescriptor(Brush brush, int x, int y) {
+		super();
+		this.brush = brush;
+		this.x = x;
+		this.y = y;
+	}
+	
+	public int getX() {
+		return x;
+	}
+	
+	public int getY() {
+		return y;
+	}
+	
+	public Brush getBrush() {
+		return brush;
+	}
+}
 
 public class MultidrawGameScreen implements ApplicationListener {
 
@@ -53,58 +80,46 @@ public class MultidrawGameScreen implements ApplicationListener {
 	private Slider green_slider;
 	private Pixmap colorPreview;
 	private Texture colorPreviewTexture;
-	private Button softRound;
-	private Button hardRound;
-	private Button slope5;
-	private Button square5;
 	private AssetManager manager;
 	
+	private ArrayList<BrushButtonDescriptor> brushButtonsDesc;
+	private ArrayList<Button> brushButtons;
+	private int canvasSize;
+	
 	public MultidrawGameScreen() {
+		brushButtonsDesc = new ArrayList<BrushButtonDescriptor>();
+		brushButtons = new ArrayList<Button>();
+		
+		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.pixel, red_x, red_y + 80));
+		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.round, red_x + 45, red_y + 80));
+		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.round7, red_x + 90, red_y + 80));
+		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.round11, red_x + 135, red_y + 80));
+		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.crossSmooth, red_x + 180, red_y + 80));
+		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.smooth5, red_x + 225, red_y + 80));
+		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.smooth7, red_x, red_y + 35));
+		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.smooth11, red_x + 45, red_y + 35));
+		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.square3, red_x + 90, red_y + 35));
+		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.square5, red_x + 135, red_y + 35));
+		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.square11, red_x + 180, red_y + 35));
+		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.square15, red_x + 225, red_y + 35));
+		
+		canvasSize = 128; // Default
+	}
+	
+	public MultidrawGameScreen(ArrayList<BrushButtonDescriptor> list, int size) {
+		brushButtonsDesc = list;
+		canvasSize = size;
+		brushButtons = new ArrayList<Button>();
+	
 	}
 	
 	@Override
 	public void create() {
 		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		cam.setToOrtho(true, 320, 480);																																					
-		drawingArea = new DrawingArea(256);
-		drawingArea.setColor(Color.BLUE);
+		cam.setToOrtho(true, ORIGINAL_WIDTH, ORIGINAL_HEIGHT);																																					
+		drawingArea = new DrawingArea(canvasSize);
 		batch = new SpriteBatch();
-		stage = new Stage(320, 480, true, batch) {
-			public boolean keyTyped(char character) {
-					/* DEBUG */
-					if (character == 'g') {
-						drawingArea.setColor(Color.GREEN);
-					} else if (character == 'b') {
-						drawingArea.setColor(Color.BLUE);
-					} else if (character == 'q') {
-						drawingArea.setEraseMode();
-					} else if (character == 'r') {
-						drawingArea.setColor(Color.RED);
-					} else if (character == '1') {
-						drawingArea.setBrush(Brushes.pixel);
-					} else if (character == '2') {
-						drawingArea.setBrush(Brushes.cross);
-					} else if (character == '3') {
-						drawingArea.setBrush(Brushes.round);
-					} else if (character == '4') {
-						drawingArea.setBrush(Brushes.slope3);
-					} else if (character == '5') {
-						drawingArea.setBrush(Brushes.slope5);
-					} else if (character == '6') {
-						drawingArea.setBrush(Brushes.square3);
-					} else if (character == '7') {
-						drawingArea.setBrush(Brushes.square5);
-					} else if (character == '8') {
-						drawingArea.setBrush(Brushes.roundSmooth);
-					} else if (character == '9') {
-						drawingArea.setBrush(Brushes.crossSmooth);
-					} else if (character == '!') {
-						drawingArea.clearArea();
-					}
-					
-					return true;
-				}
-			};
+		stage = new Stage(ORIGINAL_WIDTH, ORIGINAL_HEIGHT, true, batch);
 		
 		Gdx.input.setInputProcessor(stage);
 		manager = new AssetManager();
@@ -119,8 +134,8 @@ public class MultidrawGameScreen implements ApplicationListener {
 		setupUI(manager.get("data/uiskin.json", Skin.class));
 	
 		Gdx.input.setInputProcessor(stage);
-		
-		Gdx.input.setOnscreenKeyboardVisible(true);
+		// Weird alpha if not called wtf
+		drawingArea.clearArea();
 	}
 
 	@Override
@@ -154,7 +169,7 @@ public class MultidrawGameScreen implements ApplicationListener {
 	}
 	
 
-	private void handleInput() {		
+	private void handleInput() {
 		if (Gdx.input.isTouched()) {
 			int touchx = Gdx.input.getX();
 			int touchy = Gdx.input.getY();
@@ -186,15 +201,11 @@ public class MultidrawGameScreen implements ApplicationListener {
 		Label blue_label = new Label(skin);
 		blue_label.setText("B");
 		
-		softRound = brushButtonFactory(Brushes.roundSmooth, skin, red_x, red_y + 40);
-		hardRound = brushButtonFactory(Brushes.round, skin, red_x + 40, red_y + 40);
-		slope5 = brushButtonFactory(Brushes.slope5, skin, red_x + 80, red_y + 40);
-		square5 = brushButtonFactory(Brushes.square5, skin, red_x + 120, red_y + 40);
-
-		stage.addActor(softRound);
-		stage.addActor(hardRound);
-		stage.addActor(slope5);
-		stage.addActor(square5);
+		for(BrushButtonDescriptor desc : brushButtonsDesc) {
+			Button tmp = brushButtonFactory(desc.getBrush(), skin, desc.getX(), desc.getY());
+			brushButtons.add(tmp);
+			stage.addActor(tmp);
+		}
 
 		red_slider = new Slider(0, 255, 1, skin.getStyle(SliderStyle.class), "slider");
 		green_slider = new Slider(0, 255, 1, skin.getStyle(SliderStyle.class), "slider");
@@ -294,20 +305,17 @@ public class MultidrawGameScreen implements ApplicationListener {
 	public void resume() {
 		Gdx.app.log("INFO", "Resuming...");
 		
-		stage.removeActor(softRound);
-		stage.removeActor(hardRound);
-		stage.removeActor(slope5);
-		stage.removeActor(square5);
+		for(Button button : brushButtons) {
+			stage.removeActor(button);
+		}
 		
-		softRound = brushButtonFactory(Brushes.roundSmooth, manager.get("data/uiskin.json", Skin.class), red_x, red_y + 40);
-		hardRound = brushButtonFactory(Brushes.round, manager.get("data/uiskin.json", Skin.class), red_x + 40, red_y + 40);
-		slope5 = brushButtonFactory(Brushes.slope5, manager.get("data/uiskin.json", Skin.class), red_x + 80, red_y + 40);
-		square5 = brushButtonFactory(Brushes.square5, manager.get("data/uiskin.json", Skin.class), red_x + 120, red_y + 40);
+		brushButtons.clear();
 		
-		stage.addActor(softRound);
-		stage.addActor(hardRound);
-		stage.addActor(slope5);
-		stage.addActor(square5);
+		for(BrushButtonDescriptor desc : brushButtonsDesc) {
+			Button tmp = brushButtonFactory(desc.getBrush(), manager.get("data/uiskin.json", Skin.class), desc.getX(), desc.getY());
+			brushButtons.add(tmp);
+			stage.addActor(tmp);
+		}
 	}
 
 	@Override
