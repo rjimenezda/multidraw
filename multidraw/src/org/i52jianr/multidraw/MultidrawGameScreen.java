@@ -103,7 +103,7 @@ public class MultidrawGameScreen implements ApplicationListener {
 		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.square11, red_x + 180, red_y + 35));
 		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.square15, red_x + 225, red_y + 35));
 		
-		canvasSize = 16; // Default
+		canvasSize = 256; // Default
 	}
 	
 	public MultidrawGameScreen(ArrayList<BrushButtonDescriptor> list, int size) {
@@ -177,11 +177,7 @@ public class MultidrawGameScreen implements ApplicationListener {
 			touchx = Math.round(touchx * scaleX);
 			touchy = Math.round(touchy * scaleY);
 			
-			Rectangle rect = new Rectangle(31, OFFSET_Y, 256, 256);
-			
-			if (rect.contains(touchx, touchy)) {
-				drawingArea.normDraw(touchx - OFFSET_X, touchy - OFFSET_Y);
-			}
+			drawingArea.normDraw(touchx - OFFSET_X, touchy - OFFSET_Y);
 		} else {
 			 drawingArea.removeLast();
 		}
