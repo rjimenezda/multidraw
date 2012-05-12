@@ -34,7 +34,7 @@ public class Brush {
 		
 		Pixmap canvas = new Pixmap(32, 32, Format.RGB888);
 		Pixmap.setFilter(Filter.NearestNeighbour);
-		canvas.drawPixmap(pix, 0, 0, brush.length, brush.length, 0, 0, 32, 32);
+		canvas.drawPixmap(pix, 0, 0, brush.length, brush.length, 16 - brush.length, 16 - brush.length, brush.length*2, brush.length*2);
 		
 		return canvas;
 	}

@@ -15,6 +15,8 @@ public class DrawingArea {
 	private int lasty = -1;
 	private Brush currentBrush;
 	
+	private boolean eraseMode;
+	
 	public DrawingArea(int size) {
 		this();
 		this.size = size;
@@ -34,23 +36,30 @@ public class DrawingArea {
 	public void drawAt(int x, int y) {
 		int brushSize = currentBrush.getSize();
 		float[][] brush = currentBrush.getBrush();
+		Color color;
 		
-		minipixmap.setColor(frontColor);
+		if (eraseMode) {
+			color = backgroundColor;
+		} else {
+			color = frontColor;
+		}
+
+		// This might look redundant, but should be more efficient because
+		// the condition is not evaluated for each pixel on the brush
 		if (lastx != -1 && lasty != -1) {
 			for (int i = -brushSize; i < brushSize+1; i++) {
 				for (int j = -brushSize; j < brushSize+1; j++) {
 					if (brush[brushSize+i][brushSize+j] != 0) {
-						minipixmap.setColor(frontColor.r, frontColor.g, frontColor.b, brush[brushSize+i][brushSize+j]);
+						minipixmap.setColor(color.r, color.g, color.b, brush[brushSize+i][brushSize+j]);
 						minipixmap.drawLine(lastx+i, lasty+j, x+i, y+j);	
 					}				
 				}
 			}
 		} else {
-			
 			for (int i = -brushSize; i < brushSize+1; i++) {
 				for (int j = -brushSize; j < brushSize+1; j++) {
 					if (brush[brushSize+i][brushSize+j] != 0) {
-						minipixmap.setColor(frontColor.r, frontColor.g, frontColor.b, brush[brushSize+i][brushSize+j]);
+						minipixmap.setColor(color.r, color.g, color.b, brush[brushSize+i][brushSize+j]);
 						minipixmap.drawPixel(x+i, y+j);	
 					}				
 				}
@@ -79,11 +88,11 @@ public class DrawingArea {
 	}
 	
 	public void setEraseMode() {
-		setColor(backgroundColor);
+		eraseMode = true;
 	}
 	
 	public void setDrawMode() {
-		setColor(frontColor);
+		eraseMode = false;
 	}
 
 	public void removeLast() {
