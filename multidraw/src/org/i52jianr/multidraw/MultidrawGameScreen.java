@@ -57,7 +57,7 @@ public class MultidrawGameScreen implements ApplicationListener {
 	private Button hardRound;
 	private Button slope5;
 	private Button square5;
-	private Skin skin;
+	private AssetManager manager;
 	
 	public MultidrawGameScreen() {
 	}
@@ -107,14 +107,16 @@ public class MultidrawGameScreen implements ApplicationListener {
 			};
 		
 		Gdx.input.setInputProcessor(stage);
-		AssetManager manager = new AssetManager();
+		manager = new AssetManager();
 		manager.load("data/uiskin.json", Skin.class);
+		manager.load("draw-brush.png", Texture.class);
+		manager.load("draw-eraser-2.png", Texture.class);
+		manager.load("edit-clear-2.png", Texture.class);
 		
 		// While things yet to be loaded...
 		while(!manager.update());
 		
-		skin = manager.get("data/uiskin.json", Skin.class);
-		setupUI(skin);
+		setupUI(manager.get("data/uiskin.json", Skin.class));
 	
 		Gdx.input.setInputProcessor(stage);
 		
@@ -128,7 +130,7 @@ public class MultidrawGameScreen implements ApplicationListener {
 		
 		// We could use event handlers in case of performance drop 
 		setSelectedColor();
-		handleInput();
+		handleInput();	
 		
 		Texture texture = new Texture(drawingArea.getPixmap());
 		texture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
@@ -193,7 +195,7 @@ public class MultidrawGameScreen implements ApplicationListener {
 		stage.addActor(hardRound);
 		stage.addActor(slope5);
 		stage.addActor(square5);
-		
+
 		red_slider = new Slider(0, 255, 1, skin.getStyle(SliderStyle.class), "slider");
 		green_slider = new Slider(0, 255, 1, skin.getStyle(SliderStyle.class), "slider");
 		blue_slider = new Slider(0, 255, 1, skin.getStyle(SliderStyle.class), "slider");
@@ -230,6 +232,57 @@ public class MultidrawGameScreen implements ApplicationListener {
 		colorPreview = new Pixmap(64, 64, Pixmap.Format.RGBA8888);
 		colorPreviewTexture = new Texture(colorPreview);
 		colorPreviewTexture.bind();
+
+		Label drawThis = new Label(manager.get("data/uiskin.json", Skin.class));
+		drawThis.setText("Dibuja...La Dignidad");
+		drawThis.x = (ORIGINAL_WIDTH / 2) - (drawThis.getTextBounds().width / 2);
+		drawThis.y = ORIGINAL_HEIGHT - OFFSET_Y + 5;
+		
+		stage.addActor(drawThis);
+		
+		// Brush, eraser, clear buttons
+		Button brush_button = new Button(new Image(manager.get("draw-brush.png", Texture.class), Scaling.fill), manager.get("data/uiskin.json", Skin.class));
+		Button erase_button = new Button(new Image(manager.get("draw-eraser-2.png", Texture.class), Scaling.fill), manager.get("data/uiskin.json", Skin.class));
+		Button clear_button = new Button(new Image(manager.get("edit-clear-2.png", Texture.class), Scaling.fill), manager.get("data/uiskin.json", Skin.class));
+		
+		brush_button.setClickListener(new ClickListener() {
+			
+			@Override
+			public void click(Actor actor, float x, float y) {
+				drawingArea.setDrawMode();
+			}
+		});
+		
+		erase_button.setClickListener(new ClickListener() {
+			
+			@Override
+			public void click(Actor actor, float x, float y) {
+				drawingArea.setEraseMode();
+			}
+		});
+		
+		clear_button.setClickListener(new ClickListener() {
+			
+			@Override
+			public void click(Actor actor, float x, float y) {
+				drawingArea.clearArea();
+			}
+		});
+		
+		// Setup Position
+		clear_button.x = ORIGINAL_WIDTH - clear_button.width - 10;
+		clear_button.y = blue_slider.y;
+		
+		erase_button.x = ORIGINAL_WIDTH - erase_button.width - 10;
+		erase_button.y = green_slider.y;
+		
+		brush_button.x = ORIGINAL_WIDTH - brush_button.width - 10;
+		brush_button.y = red_slider.y;
+		
+		stage.addActor(brush_button);
+		stage.addActor(erase_button);
+		stage.addActor(clear_button);
+
 	}
 
 	@Override
@@ -246,10 +299,10 @@ public class MultidrawGameScreen implements ApplicationListener {
 		stage.removeActor(slope5);
 		stage.removeActor(square5);
 		
-		softRound = brushButtonFactory(Brushes.roundSmooth, skin, red_x, red_y + 40);
-		hardRound = brushButtonFactory(Brushes.round, skin, red_x + 40, red_y + 40);
-		slope5 = brushButtonFactory(Brushes.slope5, skin, red_x + 80, red_y + 40);
-		square5 = brushButtonFactory(Brushes.square5, skin, red_x + 120, red_y + 40);
+		softRound = brushButtonFactory(Brushes.roundSmooth, manager.get("data/uiskin.json", Skin.class), red_x, red_y + 40);
+		hardRound = brushButtonFactory(Brushes.round, manager.get("data/uiskin.json", Skin.class), red_x + 40, red_y + 40);
+		slope5 = brushButtonFactory(Brushes.slope5, manager.get("data/uiskin.json", Skin.class), red_x + 80, red_y + 40);
+		square5 = brushButtonFactory(Brushes.square5, manager.get("data/uiskin.json", Skin.class), red_x + 120, red_y + 40);
 		
 		stage.addActor(softRound);
 		stage.addActor(hardRound);

@@ -9,7 +9,7 @@ public class DrawingArea {
 	private Pixmap pixmap;
 	private Pixmap minipixmap;
 	private int size;
-	private Color backgroundColor = Color.BLACK;
+	private Color backgroundColor = Color.WHITE;
 	private Color frontColor = Color.RED;
 	private int lastx = -1;
 	private int lasty = -1;
