@@ -87,6 +87,8 @@ public class MultidrawGameScreen implements ApplicationListener {
 	private ArrayList<Button> brushButtons;
 	private int canvasSize;
 	
+	private Button activeBrushButton;
+	
 	public MultidrawGameScreen() {
 		brushButtonsDesc = new ArrayList<BrushButtonDescriptor>();
 		brushButtons = new ArrayList<Button>();
@@ -205,6 +207,10 @@ public class MultidrawGameScreen implements ApplicationListener {
 			brushButtons.add(tmp);
 			stage.addActor(tmp);
 		}
+		
+		// Setting up initial state, not my best work but hey
+		activeBrushButton = brushButtons.get(0);
+		activeBrushButton.setStyle(skin.getStyle("checked", ButtonStyle.class));
 
 		red_slider = new Slider(0, 255, 1, skin.getStyle(SliderStyle.class), "slider");
 		green_slider = new Slider(0, 255, 1, skin.getStyle(SliderStyle.class), "slider");
@@ -284,6 +290,9 @@ public class MultidrawGameScreen implements ApplicationListener {
 			}
 		});
 		
+		// Initial style state
+		brush_button.click(0, 0);
+		
 		// Setup Position
 		clear_button.x = ORIGINAL_WIDTH - clear_button.width - 10;
 		clear_button.y = blue_slider.y;
@@ -339,17 +348,21 @@ public class MultidrawGameScreen implements ApplicationListener {
 		drawingArea.setColor(color);
 	}
 	
-	private Button brushButtonFactory(final Brush brush, Skin skin, int x, int y) {
+	private Button brushButtonFactory(final Brush brush, final Skin skin, int x, int y) {
 		Texture text = new Texture(brush.getPixmap());
 		text.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		text.bind();
 		Image image = new Image(text, Scaling.fill);
-		Button button = new Button(image, skin.getStyle(ButtonStyle.class));
+		final Button button = new Button(image, skin.getStyle(ButtonStyle.class));
 		button.setClickListener(new ClickListener() {
-			
 			@Override
 			public void click(Actor actor, float x, float y) {
 				drawingArea.setBrush(brush);
+				if (!activeBrushButton.equals(button)) {
+					button.setStyle(skin.getStyle("checked", ButtonStyle.class));
+					activeBrushButton.setStyle(skin.getStyle("unchecked", ButtonStyle.class));
+					activeBrushButton = button;	
+				}
 			}
 		});
 		
