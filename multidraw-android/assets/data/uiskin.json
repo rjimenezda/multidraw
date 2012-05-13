@@ -184,7 +184,9 @@ resources: {
 styles: {
 	com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
 		default: { down: default-round-down, up: default-round },
-		toggle: { down: default-round-down, checked: default-round-down, up: default-round }
+		checked: { down: default-round, up: default-round-down  },
+		unchecked: { down: default-round-down, up: default-round },
+		toggle: { down: default-round-down, checked: default-round-down, up: default-round },
 	},
 	com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 		default: { down: default-round-down, up: default-round, font: default-font, fontColor: white },

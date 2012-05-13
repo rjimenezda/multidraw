@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
+import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -125,7 +126,9 @@ public class MultidrawGameScreen implements ApplicationListener {
 		manager = new AssetManager();
 		manager.load("data/uiskin.json", Skin.class);
 		manager.load("draw-brush.png", Texture.class);
+		manager.load("draw-brush-active.png", Texture.class);
 		manager.load("draw-eraser-2.png", Texture.class);
+		manager.load("draw-eraser-2-active.png", Texture.class);
 		manager.load("edit-clear-2.png", Texture.class);
 		
 		// While things yet to be loaded...
@@ -189,7 +192,7 @@ public class MultidrawGameScreen implements ApplicationListener {
         scaleY = ((float)ORIGINAL_HEIGHT) / height;
 	}
 
-	private void setupUI(Skin skin) {
+	private void setupUI(final Skin skin) {
 		Label red_label = new Label(skin);
 		red_label.setText("R");
 		Label green_label = new Label(skin);
@@ -248,8 +251,8 @@ public class MultidrawGameScreen implements ApplicationListener {
 		stage.addActor(drawThis);
 		
 		// Brush, eraser, clear buttons
-		Button brush_button = new Button(new Image(manager.get("draw-brush.png", Texture.class), Scaling.fill), manager.get("data/uiskin.json", Skin.class));
-		Button erase_button = new Button(new Image(manager.get("draw-eraser-2.png", Texture.class), Scaling.fill), manager.get("data/uiskin.json", Skin.class));
+		final Button brush_button = new Button(new Image(manager.get("draw-brush.png", Texture.class), Scaling.fill), manager.get("data/uiskin.json", Skin.class));
+		final Button erase_button = new Button(new Image(manager.get("draw-eraser-2.png", Texture.class), Scaling.fill), manager.get("data/uiskin.json", Skin.class));
 		Button clear_button = new Button(new Image(manager.get("edit-clear-2.png", Texture.class), Scaling.fill), manager.get("data/uiskin.json", Skin.class));
 		
 		brush_button.setClickListener(new ClickListener() {
@@ -257,6 +260,9 @@ public class MultidrawGameScreen implements ApplicationListener {
 			@Override
 			public void click(Actor actor, float x, float y) {
 				drawingArea.setDrawMode();
+				// Toggle the state (same on the other button's method)
+				erase_button.setStyle(skin.getStyle("unchecked", ButtonStyle.class));
+				brush_button.setStyle(skin.getStyle("checked", ButtonStyle.class));
 			}
 		});
 		
@@ -265,6 +271,8 @@ public class MultidrawGameScreen implements ApplicationListener {
 			@Override
 			public void click(Actor actor, float x, float y) {
 				drawingArea.setEraseMode();
+				brush_button.setStyle(skin.getStyle("unchecked", ButtonStyle.class));
+				erase_button.setStyle(skin.getStyle("checked", ButtonStyle.class));
 			}
 		});
 		
