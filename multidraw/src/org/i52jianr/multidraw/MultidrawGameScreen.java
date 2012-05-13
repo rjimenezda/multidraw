@@ -128,9 +128,7 @@ public class MultidrawGameScreen implements ApplicationListener {
 		manager = new AssetManager();
 		manager.load("data/uiskin.json", Skin.class);
 		manager.load("draw-brush.png", Texture.class);
-		manager.load("draw-brush-active.png", Texture.class);
 		manager.load("draw-eraser-2.png", Texture.class);
-		manager.load("draw-eraser-2-active.png", Texture.class);
 		manager.load("edit-clear-2.png", Texture.class);
 		
 		// While things yet to be loaded...
