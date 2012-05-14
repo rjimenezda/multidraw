@@ -1,6 +1,6 @@
 package org.i52jianr.multidraw.client;
 
-import org.i52jianr.multidraw.MultidrawGameScreen;
+import org.i52jianr.multidraw.Multidraw;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
@@ -16,6 +16,6 @@ public class GwtLauncher extends GwtApplication {
 
 	@Override
 	public ApplicationListener getApplicationListener () {
-		return new MultidrawGameScreen();
+		return new Multidraw();
 	}
 }

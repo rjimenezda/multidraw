@@ -11,8 +11,6 @@ public class Main {
 		cfg.width = 320;
 		cfg.height = 480;
 		
-		//new LwjglApplication(new Multidraw(), cfg);
-//		new LwjglApplication(new MultidrawTest(), cfg);
-		 new LwjglApplication(new MultidrawGameScreen(), cfg);
+		new LwjglApplication(new Multidraw(), cfg);
 	}
 }

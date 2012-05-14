@@ -19,7 +19,7 @@ public class MultidrawMenuScreen implements Screen {
 		
 		if (Gdx.input.justTouched())
 			// Gdx.app.log("INFO", "Touched at: " + Gdx.input.getX() + " / " + Gdx.input.getY());
-			this.game.setGameScreen();
+			this.game.setGameScreen(new MultidrawGameScreen());
 	}
 
 	@Override

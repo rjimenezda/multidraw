@@ -2,8 +2,8 @@ package org.i52jianr.multidraw;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
@@ -11,9 +11,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Texture.TextureFilter;
-import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -24,6 +22,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.tablelayout.Table;
 import com.badlogic.gdx.utils.Scaling;
 
 class BrushButtonDescriptor {
@@ -51,7 +50,7 @@ class BrushButtonDescriptor {
 	}
 }
 
-public class MultidrawGameScreen implements ApplicationListener {
+public class MultidrawGameScreen implements Screen {
 
     private OrthographicCamera cam;
 	private DrawingArea drawingArea;
@@ -115,62 +114,6 @@ public class MultidrawGameScreen implements ApplicationListener {
 		brushButtons = new ArrayList<Button>();
 	
 	}
-	
-	@Override
-	public void create() {
-		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		cam.setToOrtho(true, ORIGINAL_WIDTH, ORIGINAL_HEIGHT);																																					
-		drawingArea = new DrawingArea(canvasSize);
-		batch = new SpriteBatch();
-		stage = new Stage(ORIGINAL_WIDTH, ORIGINAL_HEIGHT, true, batch);
-		
-		Gdx.input.setInputProcessor(stage);
-		manager = new AssetManager();
-		manager.load("data/uiskin.json", Skin.class);
-		manager.load("draw-brush.png", Texture.class);
-		manager.load("draw-eraser-2.png", Texture.class);
-		manager.load("edit-clear-2.png", Texture.class);
-		
-		// While things yet to be loaded...
-		while(!manager.update());
-		
-		setupUI(manager.get("data/uiskin.json", Skin.class));
-	
-		Gdx.input.setInputProcessor(stage);
-		// Weird alpha if not called wtf
-		drawingArea.clearArea();
-	}
-
-	@Override
-	public void render() {
-		Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-		
-		// We could use event handlers in case of performance drop 
-		setSelectedColor();
-		handleInput();	
-		
-		Texture texture = new Texture(drawingArea.getPixmap());
-		texture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		texture.bind();
-		
-		Texture colortext = new Texture(colorPreview);
-		colortext.bind();
-		
-		cam.update();
-		batch.setProjectionMatrix(cam.combined);
-		batch.begin();
-		batch.draw(texture, OFFSET_X, OFFSET_Y);
-		batch.draw(colortext, 200, 390);
-		batch.end();
-		
-		stage.act(Gdx.graphics.getDeltaTime());
-		stage.draw();
-		
-		texture.dispose();
-		colortext.dispose();
-	}
-	
 
 	private void handleInput() {
 		if (Gdx.input.isTouched()) {
@@ -243,7 +186,7 @@ public class MultidrawGameScreen implements ApplicationListener {
 		blue_slider.setValue(172);
 		
 		// Maybe it's not necessary to use RGBA?
-		colorPreview = new Pixmap(64, 64, Pixmap.Format.RGBA8888);
+		colorPreview = new Pixmap(32, 32, Pixmap.Format.RGBA8888);
 		colorPreviewTexture = new Texture(colorPreview);
 		colorPreviewTexture.bind();
 
@@ -254,10 +197,17 @@ public class MultidrawGameScreen implements ApplicationListener {
 		
 		stage.addActor(drawThis);
 		
+		Label currentColor = new Label("Color", manager.get("data/uiskin.json", Skin.class));
+		currentColor.y = red_slider.y;
+		currentColor.x = 180;
+		
+		stage.addActor(currentColor);
+		
 		// Brush, eraser, clear buttons
 		final Button brush_button = new Button(new Image(manager.get("draw-brush.png", Texture.class), Scaling.fill), manager.get("data/uiskin.json", Skin.class));
 		final Button erase_button = new Button(new Image(manager.get("draw-eraser-2.png", Texture.class), Scaling.fill), manager.get("data/uiskin.json", Skin.class));
 		Button clear_button = new Button(new Image(manager.get("edit-clear-2.png", Texture.class), Scaling.fill), manager.get("data/uiskin.json", Skin.class));
+		Button menu_button = new Button(new Image(manager.get("format-list-unordered.png", Texture.class), Scaling.fill), manager.get("data/uiskin.json", Skin.class));
 		
 		brush_button.setClickListener(new ClickListener() {
 			
@@ -291,19 +241,33 @@ public class MultidrawGameScreen implements ApplicationListener {
 		// Initial style state
 		brush_button.click(0, 0);
 		
-		// Setup Position
-		clear_button.x = ORIGINAL_WIDTH - clear_button.width - 10;
-		clear_button.y = blue_slider.y;
+		Table buttonTable = new Table(manager.get("data/uiskin.json", Skin.class));
+//		buttonTable.stack(brush_button, erase_button, clear_button, menu_button);
+		buttonTable.row();
+		buttonTable.add(brush_button).pad(5);
+		buttonTable.add(erase_button).pad(5);
+		buttonTable.row();
+		buttonTable.add(clear_button).pad(5);
+		buttonTable.add(menu_button).pad(5);
+
+		buttonTable.x = ORIGINAL_WIDTH - (clear_button.width * 2);
+		buttonTable.y = red_slider.y - 5;
 		
-		erase_button.x = ORIGINAL_WIDTH - erase_button.width - 10;
-		erase_button.y = green_slider.y;
+		stage.addActor(buttonTable);
 		
-		brush_button.x = ORIGINAL_WIDTH - brush_button.width - 10;
-		brush_button.y = red_slider.y;
+//		// Setup Position
+//		clear_button.x = ORIGINAL_WIDTH - clear_button.width - 10;
+//		clear_button.y = blue_slider.y;
+//		
+//		erase_button.x = ORIGINAL_WIDTH - erase_button.width - 10;
+//		erase_button.y = green_slider.y;
+//		
+//		brush_button.x = ORIGINAL_WIDTH - brush_button.width - 10;
+//		brush_button.y = red_slider.y;
 		
-		stage.addActor(brush_button);
-		stage.addActor(erase_button);
-		stage.addActor(clear_button);
+//		stage.addActor(brush_button);
+//		stage.addActor(erase_button);
+//		stage.addActor(clear_button);
 
 	}
 
@@ -335,6 +299,66 @@ public class MultidrawGameScreen implements ApplicationListener {
 		batch.dispose();
 	}
 	
+	@Override
+	public void render(float delta) {
+		Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		
+		// We could use event handlers in case of performance drop 
+		setSelectedColor();
+		handleInput();	
+		
+		Texture texture = new Texture(drawingArea.getPixmap());
+		texture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		texture.bind();
+		
+		Texture colortext = new Texture(colorPreview);
+		colortext.bind();
+		
+		cam.update();
+		batch.setProjectionMatrix(cam.combined);
+		batch.begin();
+		batch.draw(texture, OFFSET_X, OFFSET_Y);
+		batch.draw(colortext, 180, 400, 48, 48);
+		batch.end();
+		
+		stage.act(Gdx.graphics.getDeltaTime());
+		stage.draw();
+		
+		texture.dispose();
+		colortext.dispose();
+	}
+
+	@Override
+	public void show() {
+		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		cam.setToOrtho(true, ORIGINAL_WIDTH, ORIGINAL_HEIGHT);																																					
+		drawingArea = new DrawingArea(canvasSize);
+		batch = new SpriteBatch();
+		stage = new Stage(ORIGINAL_WIDTH, ORIGINAL_HEIGHT, true, batch);
+		
+		Gdx.input.setInputProcessor(stage);
+		manager = new AssetManager();
+		manager.load("data/uiskin.json", Skin.class);
+		manager.load("draw-brush.png", Texture.class);
+		manager.load("draw-eraser-2.png", Texture.class);
+		manager.load("edit-clear-2.png", Texture.class);
+		manager.load("format-list-unordered.png", Texture.class);
+		
+		// While things yet to be loaded...
+		while(!manager.update());
+		
+		setupUI(manager.get("data/uiskin.json", Skin.class));
+	
+		Gdx.input.setInputProcessor(stage);
+		// Weird alpha if not called wtf
+		drawingArea.clearArea();
+	}
+
+	@Override
+	public void hide() {
+	}
+
 	// Overloading is cool
 	private void setSelectedColor() {
 		setSelectedColor(new Color(red_slider.getValue() / 255.0f, green_slider.getValue()  / 255.0f, blue_slider.getValue() / 255.0f, 1.0f));

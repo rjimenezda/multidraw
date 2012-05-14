@@ -5,20 +5,23 @@ import com.badlogic.gdx.Game;
 public class Multidraw extends Game {
 	
 	private MultidrawMenuScreen menuScreen;
+	private MultidrawGameScreen	gameScreen;
 	
 	@Override
 	public void create() {
 		menuScreen = new MultidrawMenuScreen(this);
+		setScreen(menuScreen);
 		// setScreen(gameScreen);
 	}
 	
-	public void setGameScreen() {
-		getScreen().dispose();
-		// setScreen(gameScreen);
+	public void setGameScreen(MultidrawGameScreen screen) {
+		gameScreen = screen;
+		setScreen(gameScreen);
+		// getScreen().dispose();
 	}
 	
 	public void setMenuScreen() {
-		// getScreen().dispose();
+		getScreen().dispose();
 		setScreen(menuScreen);
 	}
 
