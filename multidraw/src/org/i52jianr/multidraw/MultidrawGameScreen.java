@@ -88,7 +88,9 @@ public class MultidrawGameScreen implements Screen {
 	
 	private Button activeBrushButton;
 	
-	public MultidrawGameScreen() {
+	Multidraw game;
+	
+	public MultidrawGameScreen(Multidraw game) {
 		brushButtonsDesc = new ArrayList<BrushButtonDescriptor>();
 		brushButtons = new ArrayList<Button>();
 		
@@ -106,6 +108,8 @@ public class MultidrawGameScreen implements Screen {
 		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.square15, red_x + 225, red_y + 35));
 		
 		canvasSize = 256; // Default
+		
+		this.game = game;
 	}
 	
 	public MultidrawGameScreen(ArrayList<BrushButtonDescriptor> list, int size) {
@@ -154,6 +158,7 @@ public class MultidrawGameScreen implements Screen {
 		stage = new Stage(ORIGINAL_WIDTH, ORIGINAL_HEIGHT, true, batch);
 		
 		Gdx.input.setInputProcessor(stage);
+		Gdx.app.log("INFO", "loading");
 		manager = new AssetManager();
 		manager.load("data/uiskin.json", Skin.class);
 		manager.load("draw-brush.png", Texture.class);
@@ -163,6 +168,7 @@ public class MultidrawGameScreen implements Screen {
 		
 		// While things yet to be loaded...
 		while(!manager.update());
+		Gdx.app.log("INFO", "Loaded!");
 		
 		setupUI(manager.get("data/uiskin.json", Skin.class));
 	
@@ -219,7 +225,7 @@ public class MultidrawGameScreen implements Screen {
 
 	@Override
 	public void dispose() {
-		// drawingArea.dispose();
+		drawingArea.dispose();
 		batch.dispose();
 	}
 
@@ -323,6 +329,14 @@ public class MultidrawGameScreen implements Screen {
 			@Override
 			public void click(Actor actor, float x, float y) {
 				drawingArea.clearArea();
+			}
+		});
+		
+		menu_button.setClickListener(new ClickListener() {
+			
+			@Override
+			public void click(Actor actor, float x, float y) {
+				game.setMenuScreen();
 			}
 		});
 		

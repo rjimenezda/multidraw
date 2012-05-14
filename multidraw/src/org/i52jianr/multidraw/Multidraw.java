@@ -11,7 +11,24 @@ public class Multidraw extends Game {
 	public void create() {
 		menuScreen = new MultidrawMenuScreen(this);
 		setScreen(menuScreen);
-		// setScreen(gameScreen);
+		
+		// This is just thinking out loud...
+		
+		// Load minimal resources for a loading screen
+		
+		// Create that screen with just a texture or something
+		
+		// Set that screen
+		
+		// Start loading the rest of the files
+		
+		// Wait until everything's loaded
+		
+		// Pass the asset manager around
+		
+		// ???????
+		
+		// Profit!
 	}
 	
 	public void setGameScreen(MultidrawGameScreen screen) {
@@ -21,7 +38,7 @@ public class Multidraw extends Game {
 	}
 	
 	public void setMenuScreen() {
-		getScreen().dispose();
+		getScreen().dispose(); // Risky
 		setScreen(menuScreen);
 	}
 
