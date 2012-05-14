@@ -114,6 +114,66 @@ public class MultidrawGameScreen implements Screen {
 		brushButtons = new ArrayList<Button>();
 	
 	}
+	
+	@Override
+	public void render(float delta) {
+		Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		
+		// We could use event handlers in case of performance drop 
+		setSelectedColor();
+		handleInput();
+		
+		Texture texture = new Texture(drawingArea.getPixmap());
+		texture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		texture.bind();
+		
+		Texture colortext = new Texture(colorPreview);
+		colortext.bind();
+		
+		cam.update();
+		batch.setProjectionMatrix(cam.combined);
+		batch.begin();
+		batch.draw(texture, OFFSET_X, OFFSET_Y);
+		batch.draw(colortext, 180, 400, 48, 48);
+		batch.end();
+		
+		stage.act(Gdx.graphics.getDeltaTime());
+		stage.draw();
+		
+		texture.dispose();
+		colortext.dispose();
+	}
+
+	@Override
+	public void show() {
+		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		cam.setToOrtho(true, ORIGINAL_WIDTH, ORIGINAL_HEIGHT);																																					
+		drawingArea = new DrawingArea(canvasSize);
+		batch = new SpriteBatch();
+		stage = new Stage(ORIGINAL_WIDTH, ORIGINAL_HEIGHT, true, batch);
+		
+		Gdx.input.setInputProcessor(stage);
+		manager = new AssetManager();
+		manager.load("data/uiskin.json", Skin.class);
+		manager.load("draw-brush.png", Texture.class);
+		manager.load("draw-eraser-2.png", Texture.class);
+		manager.load("edit-clear-2.png", Texture.class);
+		manager.load("format-list-unordered.png", Texture.class);
+		
+		// While things yet to be loaded...
+		while(!manager.update());
+		
+		setupUI(manager.get("data/uiskin.json", Skin.class));
+	
+		Gdx.input.setInputProcessor(stage);
+		// Weird alpha if not called wtf
+		drawingArea.clearArea();
+	}
+
+	@Override
+	public void hide() {
+	}
 
 	private void handleInput() {
 		if (Gdx.input.isTouched()) {
@@ -133,6 +193,34 @@ public class MultidrawGameScreen implements Screen {
 	public void resize(int width, int height) {
         scaleX = ((float)ORIGINAL_WIDTH) / width;
         scaleY = ((float)ORIGINAL_HEIGHT) / height;
+	}
+	
+	@Override
+	public void pause() {
+		Gdx.app.log("INFO", "Pausing...");
+	}
+
+	@Override
+	public void resume() {
+		Gdx.app.log("INFO", "Resuming...");
+		
+		for(Button button : brushButtons) {
+			stage.removeActor(button);
+		}
+		
+		brushButtons.clear();
+		
+		for(BrushButtonDescriptor desc : brushButtonsDesc) {
+			Button tmp = brushButtonFactory(desc.getBrush(), manager.get("data/uiskin.json", Skin.class), desc.getX(), desc.getY());
+			brushButtons.add(tmp);
+			stage.addActor(tmp);
+		}
+	}
+
+	@Override
+	public void dispose() {
+		// drawingArea.dispose();
+		batch.dispose();
 	}
 
 	private void setupUI(final Skin skin) {
@@ -242,7 +330,6 @@ public class MultidrawGameScreen implements Screen {
 		brush_button.click(0, 0);
 		
 		Table buttonTable = new Table(manager.get("data/uiskin.json", Skin.class));
-//		buttonTable.stack(brush_button, erase_button, clear_button, menu_button);
 		buttonTable.row();
 		buttonTable.add(brush_button).pad(5);
 		buttonTable.add(erase_button).pad(5);
@@ -254,109 +341,6 @@ public class MultidrawGameScreen implements Screen {
 		buttonTable.y = red_slider.y - 5;
 		
 		stage.addActor(buttonTable);
-		
-//		// Setup Position
-//		clear_button.x = ORIGINAL_WIDTH - clear_button.width - 10;
-//		clear_button.y = blue_slider.y;
-//		
-//		erase_button.x = ORIGINAL_WIDTH - erase_button.width - 10;
-//		erase_button.y = green_slider.y;
-//		
-//		brush_button.x = ORIGINAL_WIDTH - brush_button.width - 10;
-//		brush_button.y = red_slider.y;
-		
-//		stage.addActor(brush_button);
-//		stage.addActor(erase_button);
-//		stage.addActor(clear_button);
-
-	}
-
-	@Override
-	public void pause() {
-		Gdx.app.log("INFO", "Pausing...");
-	}
-
-	@Override
-	public void resume() {
-		Gdx.app.log("INFO", "Resuming...");
-		
-		for(Button button : brushButtons) {
-			stage.removeActor(button);
-		}
-		
-		brushButtons.clear();
-		
-		for(BrushButtonDescriptor desc : brushButtonsDesc) {
-			Button tmp = brushButtonFactory(desc.getBrush(), manager.get("data/uiskin.json", Skin.class), desc.getX(), desc.getY());
-			brushButtons.add(tmp);
-			stage.addActor(tmp);
-		}
-	}
-
-	@Override
-	public void dispose() {
-		// drawingArea.dispose();
-		batch.dispose();
-	}
-	
-	@Override
-	public void render(float delta) {
-		Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-		
-		// We could use event handlers in case of performance drop 
-		setSelectedColor();
-		handleInput();	
-		
-		Texture texture = new Texture(drawingArea.getPixmap());
-		texture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
-		texture.bind();
-		
-		Texture colortext = new Texture(colorPreview);
-		colortext.bind();
-		
-		cam.update();
-		batch.setProjectionMatrix(cam.combined);
-		batch.begin();
-		batch.draw(texture, OFFSET_X, OFFSET_Y);
-		batch.draw(colortext, 180, 400, 48, 48);
-		batch.end();
-		
-		stage.act(Gdx.graphics.getDeltaTime());
-		stage.draw();
-		
-		texture.dispose();
-		colortext.dispose();
-	}
-
-	@Override
-	public void show() {
-		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		cam.setToOrtho(true, ORIGINAL_WIDTH, ORIGINAL_HEIGHT);																																					
-		drawingArea = new DrawingArea(canvasSize);
-		batch = new SpriteBatch();
-		stage = new Stage(ORIGINAL_WIDTH, ORIGINAL_HEIGHT, true, batch);
-		
-		Gdx.input.setInputProcessor(stage);
-		manager = new AssetManager();
-		manager.load("data/uiskin.json", Skin.class);
-		manager.load("draw-brush.png", Texture.class);
-		manager.load("draw-eraser-2.png", Texture.class);
-		manager.load("edit-clear-2.png", Texture.class);
-		manager.load("format-list-unordered.png", Texture.class);
-		
-		// While things yet to be loaded...
-		while(!manager.update());
-		
-		setupUI(manager.get("data/uiskin.json", Skin.class));
-	
-		Gdx.input.setInputProcessor(stage);
-		// Weird alpha if not called wtf
-		drawingArea.clearArea();
-	}
-
-	@Override
-	public void hide() {
 	}
 
 	// Overloading is cool
