@@ -7,5 +7,6 @@
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/multidraw"/>
 	<classpathentry exported="true" kind="lib" path="/multidraw/libs/gdx.jar" sourcepath="/multidraw/libs/gdx-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gdx-backend-android.jar" sourcepath="libs/gdx-backend-android-sources.jar"/>
+	<classpathentry kind="lib" path="libs/socketio.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
