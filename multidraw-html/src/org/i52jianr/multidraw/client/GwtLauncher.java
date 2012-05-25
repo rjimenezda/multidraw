@@ -1,10 +1,8 @@
 package org.i52jianr.multidraw.client;
 
-import java.util.List;
-
+import org.i52jianr.multidraw.GetGamesHandler;
 import org.i52jianr.multidraw.Multidraw;
 import org.i52jianr.multidraw.NativeFunctions;
-import org.i52jianr.multidraw.multiplayer.GameDescriptor;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
@@ -24,11 +22,6 @@ public class GwtLauncher extends GwtApplication implements NativeFunctions {
 	}
 
 	@Override
-	public List<GameDescriptor> getGames() {
-		return null;
-	}
-
-	@Override
 	public void testNativeness() {
 		natTestNativeness();
 	}
@@ -36,5 +29,17 @@ public class GwtLauncher extends GwtApplication implements NativeFunctions {
 	private native void natTestNativeness() /*-{
 		$wnd.console.log("Booting up Multidraw");
 	}-*/;
+
+	@Override
+	public void getGames(GetGamesHandler handler) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void createGame() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

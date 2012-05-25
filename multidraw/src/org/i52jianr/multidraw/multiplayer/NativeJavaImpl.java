@@ -6,8 +6,10 @@ import io.socket.SocketIO;
 import io.socket.SocketIOException;
 
 import java.net.MalformedURLException;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.Hashtable;
 
+import org.i52jianr.multidraw.GetGamesHandler;
 import org.i52jianr.multidraw.NativeFunctions;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,8 +19,12 @@ public class NativeJavaImpl implements NativeFunctions {
 
 	public SocketIO socket;
 	public JSONArray games;
+	private String userid;
+	
+	public Hashtable<String, Object> callbacks;
 	
 	public NativeJavaImpl() {
+		callbacks = new Hashtable<String, Object>();
 		try {
 			socket = new SocketIO("http://192.168.0.198:1234");
 			
@@ -56,12 +62,18 @@ public class NativeJavaImpl implements NativeFunctions {
 				}
 				
 				@Override
-				public void on(String arg0, IOAcknowledge arg1, Object... arg2) {
-//					System.out.println("On: " + arg0);
-//					int a = 0;
-//					a++;
-					games = (JSONArray) arg2[0];
-					notify();
+				public void on(String on, IOAcknowledge ack, Object... arguments) {
+					
+					if (on.equals("current_games")) {
+						if (callbacks.containsKey("get_games")) {
+							GetGamesHandler handler = (GetGamesHandler) callbacks.get("get_games");
+							handler.onGamesReceived(new ArrayList<GameDescriptor>());
+							callbacks.remove("get_games");
+						}
+					} else if (on.equals("user_id")) {
+						userid =(String) arguments[0]; 
+					}
+					
 				}
 			});
 			
@@ -69,23 +81,42 @@ public class NativeJavaImpl implements NativeFunctions {
 			e.printStackTrace();
 		}
 	}
-	
-	@Override
-	public List<GameDescriptor> getGames() {
-		socket.emit("get_games");
-		try {
-			wait();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		JSONArray tmp = games;
-		return null;
-	}
 
 	@Override
 	public void testNativeness() {
-		// TODO Auto-generated method stub
 		
+		JSONObject args = new JSONObject();
+		try {
+			args.put("game", "15");
+			args.put("x", 150);
+			args.put("y", 100);
+		} catch (JSONException e) {
+			// Why in the seven hells ?
+			e.printStackTrace();
+		}
+		
+		socket.emit("send_message", args);
+	}
+
+	@Override
+	public void getGames(GetGamesHandler handler) {
+		callbacks.put("get_games", handler);
+		// We could apply filters here
+		socket.emit("get_games");
+	}
+
+	@Override
+	public void createGame() {
+		
+		JSONObject args = new JSONObject();
+		try {
+			args.put("user_id", userid);
+			args.put("name", "Test game name");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		socket.emit("create_game", args);
 	}
 	
 }

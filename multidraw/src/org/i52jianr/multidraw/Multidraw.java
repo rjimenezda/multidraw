@@ -14,9 +14,9 @@ public class Multidraw extends Game {
 	
 	@Override
 	public void create() {
-		nat.getGames();
 		menuScreen = new MultidrawMenuScreen(this);
 		setScreen(menuScreen);
+		nat.testNativeness();
 		
 		// This is just thinking out loud...
 		

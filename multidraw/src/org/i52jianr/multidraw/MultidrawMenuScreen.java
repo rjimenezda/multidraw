@@ -1,6 +1,9 @@
 package org.i52jianr.multidraw;
 
+import java.util.List;
 import java.util.Random;
+
+import org.i52jianr.multidraw.multiplayer.GameDescriptor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -109,8 +112,7 @@ public class MultidrawMenuScreen implements Screen {
 			
 			@Override
 			public void click(Actor actor, float x, float y) {
-				cam.translate(3.0f, 0.0f, 0.0f);
-				Gdx.app.log("INFO", "Booting up create game...(" + x + ", " + y + ")");
+				game.nat.createGame();
 			}
 		});
 		
@@ -118,6 +120,13 @@ public class MultidrawMenuScreen implements Screen {
 			
 			@Override
 			public void click(Actor actor, float x, float y) {
+				game.nat.getGames(new GetGamesHandler() {
+					
+					@Override
+					public void onGamesReceived(List<GameDescriptor> games) {
+						// TODO 
+					}
+				});
 				Gdx.app.log("INFO", "Booting up join game...");
 			}
 		});
