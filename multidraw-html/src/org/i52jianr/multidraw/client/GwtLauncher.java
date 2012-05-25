@@ -1,8 +1,8 @@
 package org.i52jianr.multidraw.client;
 
-import org.i52jianr.multidraw.GetGamesHandler;
 import org.i52jianr.multidraw.Multidraw;
 import org.i52jianr.multidraw.NativeFunctions;
+import org.i52jianr.multidraw.multiplayer.callbacks.GetGamesHandler;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
@@ -38,6 +38,18 @@ public class GwtLauncher extends GwtApplication implements NativeFunctions {
 
 	@Override
 	public void createGame() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setUsername(String username) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void byebye() {
 		// TODO Auto-generated method stub
 		
 	}

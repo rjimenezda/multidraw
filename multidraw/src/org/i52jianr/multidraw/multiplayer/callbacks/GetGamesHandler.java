@@ -1,4 +1,4 @@
-package org.i52jianr.multidraw;
+package org.i52jianr.multidraw.multiplayer.callbacks;
 
 import java.util.List;
 

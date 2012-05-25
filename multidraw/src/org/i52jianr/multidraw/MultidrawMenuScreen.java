@@ -3,6 +3,7 @@ package org.i52jianr.multidraw;
 import java.util.List;
 
 import org.i52jianr.multidraw.multiplayer.GameDescriptor;
+import org.i52jianr.multidraw.multiplayer.callbacks.GetGamesHandler;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -29,7 +30,6 @@ public class MultidrawMenuScreen implements Screen {
 	private final int ORIGINAL_WIDTH = 320;
 	private final int ORIGINAL_HEIGHT = 480;
 
-
 	public MultidrawMenuScreen(Multidraw multidrawGame) {
 		this.game = multidrawGame;
 	}
@@ -38,7 +38,7 @@ public class MultidrawMenuScreen implements Screen {
 	public void render(float delta) {
 		Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-	
+		
 		cam.update();
 		stage.getSpriteBatch().setProjectionMatrix(cam.combined);
 		stage.act(delta);

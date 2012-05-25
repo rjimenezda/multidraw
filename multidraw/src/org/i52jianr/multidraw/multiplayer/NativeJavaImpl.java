@@ -9,8 +9,8 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import org.i52jianr.multidraw.GetGamesHandler;
 import org.i52jianr.multidraw.NativeFunctions;
+import org.i52jianr.multidraw.multiplayer.callbacks.GetGamesHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,6 +20,7 @@ public class NativeJavaImpl implements NativeFunctions {
 	public SocketIO socket;
 	public JSONArray games;
 	private String userid;
+	private String username;
 	
 	public Hashtable<String, Object> callbacks;
 	
@@ -117,6 +118,35 @@ public class NativeJavaImpl implements NativeFunctions {
 		}
 
 		socket.emit("create_game", args);
+	}
+
+	@Override
+	public void setUsername(String username) {
+		JSONObject args = new JSONObject();
+		try {
+			args.put("user_id", userid);
+			args.put("username", username);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		this.username = username;
+		socket.emit("signup", args);
+		
+	}
+
+	@Override
+	public void byebye() {
+		JSONObject args = new JSONObject();
+		try {
+			args.put("user_id", userid);
+			args.put("username", username);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		socket.emit("byebye", args);
+		socket.disconnect();
 	}
 	
 }

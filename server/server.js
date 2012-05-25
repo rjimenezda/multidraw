@@ -28,7 +28,9 @@ io.sockets.on('connection', function (socket) {
     //   owner : data.user_id,
     //   name : data.name
     // })
-    game = { owner = data.user_id, name = data.name, word = "Dignity" }
+    game = {  owner : data.user_id, 
+              name : data.name, 
+              word : "Dignity" }
 
   })
 
@@ -37,7 +39,7 @@ io.sockets.on('connection', function (socket) {
       game.player = data.user_id
     }
 
-    socket.send('start_game', )
+    socket.emit('start_game', "derp")
   })
 
   socket.on('paint', function(data) {
@@ -52,13 +54,28 @@ io.sockets.on('connection', function (socket) {
     console.log('Changed the brush to: ', data.brush)
   })
 
-  socket.on('message', function(data) {
-    // WE shouldn't capture this I believe
-    if (data.method) {
-
-    } else {
-      console.log("Discarding...(No method)")
+  socket.on('signup', function(data) {
+    // This is 
+    clients[data.user_id] = {
+      username : data.username,
+      user_id : data.user_id
     }
-
+    console.log(clients)
+    console.log(clients[data.user_id])
   })
+
+  socket.on('byebye', function(data) {
+    console.log("Deleting session...")
+    delete clients[socket.id]
+  })
+
+  // socket.on('message', function(data) {
+  //   // WE shouldn't capture this I believe
+  //   if (data.method) {
+
+  //   } else {
+  //     console.log("Discarding...(No method)")
+  //   }
+
+  // })
 });
