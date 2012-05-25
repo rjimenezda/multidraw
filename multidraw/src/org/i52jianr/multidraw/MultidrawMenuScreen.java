@@ -1,7 +1,6 @@
 package org.i52jianr.multidraw;
 
 import java.util.List;
-import java.util.Random;
 
 import org.i52jianr.multidraw.multiplayer.GameDescriptor;
 
@@ -29,8 +28,6 @@ public class MultidrawMenuScreen implements Screen {
 	private OrthographicCamera cam;
 	private final int ORIGINAL_WIDTH = 320;
 	private final int ORIGINAL_HEIGHT = 480;
-	private Label marquee;
-	private boolean touched;
 
 
 	public MultidrawMenuScreen(Multidraw multidrawGame) {
@@ -42,17 +39,6 @@ public class MultidrawMenuScreen implements Screen {
 		Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 	
-		if (touched) {
-			if (marquee.x >= ORIGINAL_WIDTH + marquee.getTextBounds().width) {
-				Random random = new Random();
-				marquee.x = -marquee.getTextBounds().width;
-				marquee.y = random.nextInt(ORIGINAL_HEIGHT - (int)marquee.getTextBounds().height);
-			}
-			else {
-				marquee.x += delta * 300;	
-			}
-		}
-		
 		cam.update();
 		stage.getSpriteBatch().setProjectionMatrix(cam.combined);
 		stage.act(delta);
@@ -84,9 +70,6 @@ public class MultidrawMenuScreen implements Screen {
 		Button createButton = new Button(new Label("CREATE GAME", skin), skin.getStyle(ButtonStyle.class));
 		Button joinButton = new Button(new Label("JOIN GAME", skin), skin.getStyle(ButtonStyle.class));
 		Button creditsButton = new Button(new Label("CREDITS", skin), skin.getStyle(ButtonStyle.class));
-		marquee = new Label("PEHLFETTO", skin);
-		marquee.y = ORIGINAL_HEIGHT / 2;
-		marquee.x = -marquee.getTextBounds().width;
 		Image image = new Image(manager.get("shittylogo.png", Texture.class));
 		
 		image.x = ORIGINAL_WIDTH / 2 - 128;
@@ -96,7 +79,7 @@ public class MultidrawMenuScreen implements Screen {
 			
 			@Override
 			public void click(Actor actor, float x, float y) {
-				touched = !touched;
+			
 			}
 		});
 		
@@ -139,7 +122,6 @@ public class MultidrawMenuScreen implements Screen {
 			}
 		});
 		
-		stage.addActor(marquee);
 		stage.addActor(image);
 		Table table = new Table();
 		table.row();
