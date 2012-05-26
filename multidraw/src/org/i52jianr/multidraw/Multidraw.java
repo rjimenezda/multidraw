@@ -2,6 +2,8 @@ package org.i52jianr.multidraw;
 
 import java.util.Random;
 
+import org.i52jianr.multidraw.screens.GameListScreen;
+import org.i52jianr.multidraw.screens.LobbyScreen;
 import org.i52jianr.multidraw.screens.MultidrawGameScreen;
 import org.i52jianr.multidraw.screens.MultidrawMenuScreen;
 
@@ -78,6 +80,16 @@ public class Multidraw extends Game {
 	public void setMenuScreen() {
 		getScreen().dispose(); // Risky
 		setScreen(menuScreen);
+	}
+	
+	public void setLobbyScreen() {
+		getScreen().dispose();
+		setScreen(new LobbyScreen(this));
+	}
+	
+	public void setGameListScreen() {
+		getScreen().dispose();
+		setScreen(new GameListScreen(this));
 	}
 	
 	@Override

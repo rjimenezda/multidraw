@@ -1,12 +1,6 @@
 package org.i52jianr.multidraw.screens;
 
-import java.util.List;
-
 import org.i52jianr.multidraw.Multidraw;
-import org.i52jianr.multidraw.multiplayer.GameDescriptor;
-import org.i52jianr.multidraw.multiplayer.User;
-import org.i52jianr.multidraw.multiplayer.callbacks.GetGamesHandler;
-import org.i52jianr.multidraw.multiplayer.callbacks.UserJoinsHandler;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -98,14 +92,7 @@ public class MultidrawMenuScreen implements Screen {
 			
 			@Override
 			public void click(Actor actor, float x, float y) {
-				// FIXME: this should happen on another screen
-				game.nat.createGame(new UserJoinsHandler() {
-					
-					@Override
-					public void onUserJoined(User user) {
-						Gdx.app.log("INFO", "User joined, username : " + user.getUsername());
-					}
-				});
+				game.setLobbyScreen();
 			}
 		});
 		
@@ -113,15 +100,9 @@ public class MultidrawMenuScreen implements Screen {
 			
 			@Override
 			public void click(Actor actor, float x, float y) {
-				game.nat.getGames(new GetGamesHandler() {
-					
-					@Override
-					public void onGamesReceived(List<GameDescriptor> games) {
-						// TODO 
-					}
-				});
 				
-				game.nat.joinGame();
+				game.setGameListScreen();
+				
 				Gdx.app.log("INFO", "Booting up join game...");
 			}
 		});

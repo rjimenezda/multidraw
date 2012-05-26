@@ -1,63 +1,167 @@
 var io = require('socket.io').listen(1234);
 
+/*
+
+Game
+{
+  game_id : owner.id
+  owner : Client,
+  player : Client,
+  name : String,
+  word : String
+}
+
+
+Client
+{
+  user_id : io.socket id
+  socket : io.Socket
+  game : Game obj
+  username : String
+}
+
+*/
+
+
+
 // Current games array.
-var games = []
+var games = new Array()
 
 // Clients array
-var clients = []
+var clients = new Array()
 
+// FIXTURES
+games.push({
+  name : "Game #1",
+  owner_name : "Rouman",
+  game_id : "asdf0q435hlkaf",
+})
+
+games.push({
+  name : "Game #2",
+  owner_name : "Rouman fake",
+  game_id : "jalskfnzxk34",
+})
+
+games.push({
+  name : "Game #3",
+  owner_name : "Wwhoooooot",
+  game_id : "herpasdf",
+})
+
+// Helper function to get an id
+function get_user(user_id) {
+  for (i in clients) {
+    if (clients[i].user_id == user_id) {
+      return clients[i]
+    }
+  }
+  console.log("ERROR: USER not found with id: ", user_id)
+}
+
+function get_game(game_id) {
+  for (i in games) {
+    if (games[i].game_id == game_id) {
+      return games[i]
+    }
+  }
+  console.log("ERROR: GAME not found with id: ", game_id)
+}
 
 io.sockets.on('connection', function (socket) {
 
   console.log("Socket_id: " + socket.id)
   
+  // We send the user_id, we don't store the user yet
   socket.emit('user_id', socket.id)
 
+  socket.on('signup', function(data) {
+
+    // The user sent his name, we save it now
+    clients[data.user_id] = {
+      username : data.username,
+      user_id : data.user_id,
+      user_socket : socket,
+      /* no game yet */    
+    }
+
+    console.log(clients[data.user_id])
+  })
+
+  // Send the list of games
   socket.on('get_games', function() {
     // console.log("Somebody wants to know what games are out there!")
-    socket.emit("current_games", games)
+    var rc = new Array()
+
+    for (i in games) {
+      rc.push({
+        name : games[i].name,
+        owner_name : games[i].owner_name,
+        game_id : games[i].game_id,
+      })
+    }
+
+    socket.emit("current_games", rc)
   })
 
-  socket.on('send_message', function(data) {
-    console.log(data)
-  })
-
+  // Someone creates a game
   socket.on('create_game', function(data) {
     console.log("Creating game...")
-    // games.push( {
-    //   owner : data.user_id,
-    //   name : data.name
-    // })
-    game = {  owner : data.owner,
-              owner_name : data.username,
+
+    client = get_user(data.owner)
+
+    game = {  
+              game_id : client.user_id,
+              owner : client,
+              owner_name : client.username,
               name : data.name, 
-              word : data.word }
+              word : data.word
+              /* no players yet */ 
+            }
+
+    games.push(game)
+
+    client.game = game
   })
 
+  // Owner quits game
   socket.on('end_game', function(data){ 
-
     if(game.player) {
         io.sockets.socket(game.player).emit("endgame")
     }
   })
 
+  // Somebody joins a game
   socket.on('join_game', function(data) {
     console.log("Somebody wants to join...")
-    // Currently just one game
-    if (game) {
-      game.player = data.user_id
+
+    if (!data.game_id) {
+      console.log("ERROR: Trying to join a game without ID")
+    } else {
+      game = get_game(data.game_id)
+
+      if (game) {
+        user = get_user(data.user_id)
+
+        game.player = user
+        player.game = game
+
+        owner_socket = io.sockets.socket(game.owner)
+
+        owner_socket.emit("joined", { 
+                                  username : data.username, 
+                                  user_id : data.user_id
+                                  })
+
+        // socket.emit('start_game', "derp")
+      } else {
+        console.log("ERROR: That game doesn't exist")
+      } 
     }
 
-    owner_socket = io.sockets.socket(game.owner)
-
-    owner_socket.emit("joined", { 
-                                username : data.username, 
-                                user_id : data.user_id
-                                })
-
-    // socket.emit('start_game', "derp")
   })
 
+  // Paint action
   socket.on('paint', function(data) {
     console.log('Painted at x:', data.x, ' y:', data.y)
     if (game.player) {
@@ -88,16 +192,7 @@ io.sockets.on('connection', function (socket) {
     }
   })
 
-  socket.on('signup', function(data) {
-    // This is 
-    clients[data.user_id] = {
-      username : data.username,
-      user_id : data.user_id
-    }
-    console.log(clients)
-    console.log(clients[data.user_id])
-  })
-
+  // Quit game
   socket.on('byebye', function(data) {
     console.log("Deleting session...")
     // Check if still in-game to notify

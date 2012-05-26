@@ -73,7 +73,15 @@ public class NativeJavaImpl implements NativeFunctions {
 						if (on.equals("current_games")) {
 							if (callbacks.containsKey("get_games")) {
 								GetGamesHandler handler = (GetGamesHandler) callbacks.get("get_games");
-								handler.onGamesReceived(new ArrayList<GameDescriptor>());
+								ArrayList<GameDescriptor> games = new ArrayList<GameDescriptor>();
+								JSONArray array = (JSONArray) arguments[0];
+								for (int i = 0; i < array.length(); i++) {
+									JSONObject obj = array.getJSONObject(i);
+									games.add(new GameDescriptor(obj.getString("game_id"), 
+																obj.getString("name"), 
+																obj.getString("owner_name")));
+								}
+								handler.onGamesReceived(games);
 								callbacks.remove("get_games");
 							}
 						} else if (on.equals("user_id")) {
