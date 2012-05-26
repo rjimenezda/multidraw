@@ -11,9 +11,12 @@ import java.util.Hashtable;
 
 import org.i52jianr.multidraw.NativeFunctions;
 import org.i52jianr.multidraw.multiplayer.callbacks.GetGamesHandler;
+import org.i52jianr.multidraw.multiplayer.callbacks.UserJoinsHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.badlogic.gdx.Gdx;
 
 public class NativeJavaImpl implements NativeFunctions {
 
@@ -65,15 +68,28 @@ public class NativeJavaImpl implements NativeFunctions {
 				@Override
 				public void on(String on, IOAcknowledge ack, Object... arguments) {
 					
-					if (on.equals("current_games")) {
-						if (callbacks.containsKey("get_games")) {
-							GetGamesHandler handler = (GetGamesHandler) callbacks.get("get_games");
-							handler.onGamesReceived(new ArrayList<GameDescriptor>());
-							callbacks.remove("get_games");
+					// Horrible code, wish I had more time to refactor and do all this with reflect or templates
+					try {
+						if (on.equals("current_games")) {
+							if (callbacks.containsKey("get_games")) {
+								GetGamesHandler handler = (GetGamesHandler) callbacks.get("get_games");
+								handler.onGamesReceived(new ArrayList<GameDescriptor>());
+								callbacks.remove("get_games");
+							}
+						} else if (on.equals("user_id")) {
+							userid =(String) arguments[0]; 
+						} else if (on.equals("joined")) {
+							if (callbacks.containsKey("user_joins")) {
+								UserJoinsHandler handler = (UserJoinsHandler) callbacks.get("user_joins");
+								JSONObject obj = (JSONObject) arguments[0];
+								handler.onUserJoined(new User(obj.getString("username"), obj.getString("user_id")));
+								callbacks.remove("user_joins");
+							}
 						}
-					} else if (on.equals("user_id")) {
-						userid =(String) arguments[0]; 
+					} catch (JSONException e) {
+						Gdx.app.error("JSON", "Caught JSONException on : " + on, e);
 					}
+					
 					
 				}
 			});
@@ -107,36 +123,47 @@ public class NativeJavaImpl implements NativeFunctions {
 	}
 
 	@Override
-	public void createGame() {
+	public void createGame(UserJoinsHandler handler) {
 		
 		JSONObject args = new JSONObject();
 		try {
-			args.put("user_id", userid);
+			args.put("owner", userid);
 			args.put("name", "Test game name");
+			args.put("username", username);
+			// Get a random word
+			args.put("word", "Dignity");
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-
+		
+		callbacks.put("user_joins", handler);
 		socket.emit("create_game", args);
 	}
 
 	@Override
 	public void setUsername(String username) {
-		JSONObject args = new JSONObject();
-		try {
-			args.put("user_id", userid);
-			args.put("username", username);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-
 		this.username = username;
-		socket.emit("signup", args);
-		
+		JSONObject args = factoryJSONUserInfo();
+		socket.emit("signup", args);	
 	}
 
 	@Override
 	public void byebye() {
+		JSONObject args = factoryJSONUserInfo();
+
+		socket.emit("byebye", args);
+		socket.disconnect();
+	}
+
+	@Override
+	public void joinGame() {
+		JSONObject args = factoryJSONUserInfo();
+		
+		socket.emit("join_game", args);
+	}
+	
+	/* Helper method */
+	private JSONObject factoryJSONUserInfo() {
 		JSONObject args = new JSONObject();
 		try {
 			args.put("user_id", userid);
@@ -144,9 +171,8 @@ public class NativeJavaImpl implements NativeFunctions {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
-
-		socket.emit("byebye", args);
-		socket.disconnect();
+		
+		return args;
 	}
 	
 }

@@ -7,5 +7,6 @@ public class GameDescriptor {
 	private int size;
 	private int nPlayers;
 	private int maxPlayers;
+	private String word;
 	
 }

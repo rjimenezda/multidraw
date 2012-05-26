@@ -1,6 +1,11 @@
-package org.i52jianr.multidraw;
+package org.i52jianr.multidraw.screens;
 
 import java.util.ArrayList;
+
+import org.i52jianr.multidraw.Brush;
+import org.i52jianr.multidraw.Brushes;
+import org.i52jianr.multidraw.DrawingArea;
+import org.i52jianr.multidraw.Multidraw;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;

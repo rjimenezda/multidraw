@@ -2,9 +2,13 @@ package org.i52jianr.multidraw;
 
 import java.util.Random;
 
+import org.i52jianr.multidraw.screens.MultidrawGameScreen;
+import org.i52jianr.multidraw.screens.MultidrawMenuScreen;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.TextInputListener;
+import com.badlogic.gdx.Preferences;
 
 public class Multidraw extends Game {
 	
@@ -22,18 +26,26 @@ public class Multidraw extends Game {
 		menuScreen = new MultidrawMenuScreen(this);
 		final Random random = new Random(System.currentTimeMillis());
 		
-		// We should store the username and only show this if it's null
-		Gdx.input.getPlaceholderTextInput(new TextInputListener() {
-	            @Override
-	            public void input(String text) {
-	            	nat.setUsername(text);
-	            }
-	            
-	            @Override
-	            public void canceled() {
-	            	nat.setUsername("User #" + random.nextInt(1000));
-	            }
-	        }, "Enter your name", "Your name");
+		final Preferences prefs = Gdx.app.getPreferences("GAME_PREFS");
+		username = prefs.getString("USERNAME", null);
+		
+		if (username == null) {
+			Gdx.input.getPlaceholderTextInput(new TextInputListener() {
+		            @Override
+		            public void input(String text) {
+		            	nat.setUsername(text);
+		            	prefs.putString("USERNAME", text);
+		            	prefs.flush();
+		            }
+		            
+		            @Override
+		            public void canceled() {
+		            	nat.setUsername("User #" + random.nextInt(1000));
+		            }
+		        }, "Enter your name", "Your name");
+		} else {
+			nat.setUsername(username);
+		}
 		
 		setScreen(menuScreen);
 		nat.testNativeness();
