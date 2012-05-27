@@ -93,8 +93,8 @@ public class GameListScreen implements Screen {
 			
 			@Override
 			public void onGamesReceived(List<GameDescriptor> games) {
+				// For each object received (game) create a row in the table
 				for (final GameDescriptor gameDesc : games) {
-					// Create a button or something
 					Label gameName = new Label(gameDesc.getName() + " by " + gameDesc.getOwnerName(), skin);
 					Label joinLabel = new Label("JOIN", skin);
 					Button button = new Button(joinLabel, skin.getStyle(ButtonStyle.class));
@@ -110,17 +110,20 @@ public class GameListScreen implements Screen {
 					table.add(button);
 					table.row().pad(5);
 				}
+				// Change the text to "Game List" and recalculate position
 				state.setText("Game list:");
 				state.x = ORIGINAL_WIDTH / 2 - state.getTextBounds().width / 2;
 				
+				// It's VERY important to do this here, Asynchronous code!!b
 				pane.setWidget(table);
-				pane.width = ORIGINAL_WIDTH;
+				pane.x = 36;
+				pane.width = ORIGINAL_WIDTH - 26;
 				pane.height = ORIGINAL_HEIGHT - 30;
 				stage.addActor(pane);
-				stage.addActor(menu_button);
 			}
 		});
-				
+			
+		stage.addActor(menu_button);
 	}
 
 	@Override

@@ -18,5 +18,7 @@ public interface NativeFunctions {
 	void setUsername(String username);
 
 	void byebye();
+
+	void endGame();
 }
 

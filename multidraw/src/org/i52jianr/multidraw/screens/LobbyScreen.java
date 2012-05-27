@@ -11,10 +11,16 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.Scaling;
 
 public class LobbyScreen implements Screen {
 
@@ -93,6 +99,23 @@ public class LobbyScreen implements Screen {
 		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		stage = new Stage(ORIGINAL_WIDTH, ORIGINAL_HEIGHT, true, batch);
 		
+		Gdx.input.setInputProcessor(stage);
+		
+		final Button menu_button = new Button(new Image(manager.get("format-list-unordered.png", Texture.class), Scaling.fill), manager.get("data/uiskin.json", Skin.class));
+		menu_button.setClickListener(new ClickListener() {
+			
+			@Override
+			public void click(Actor actor, float x, float y) {
+				if (creating) {
+					game.nat.endGame();
+				}
+				game.setMenuScreen();
+				
+			}
+		});
+		menu_button.x = 10;
+		menu_button.y = 10;
+		
 		state = new Label("Waiting...", manager.get("data/uiskin.json", Skin.class));
 		state.x = ORIGINAL_WIDTH / 2 - state.getTextBounds().width / 2;
 		state.y = ORIGINAL_HEIGHT - 100;
@@ -115,6 +138,8 @@ public class LobbyScreen implements Screen {
 				}
 			});
 		}
+		
+		stage.addActor(menu_button);
 	}
 
 	@Override

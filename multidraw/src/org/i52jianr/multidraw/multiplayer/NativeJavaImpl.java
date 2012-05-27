@@ -192,6 +192,13 @@ public class NativeJavaImpl implements NativeFunctions {
 		socket.emit("join_game", args);
 	}
 	
+	@Override
+	public void endGame() {
+		JSONObject args = factoryJSONUserInfo();
+		putJSON(args, "why", "Server stopped the game");
+		socket.emit("end_game", args);
+	}
+	
 	/* Helper method */
 	private JSONObject factoryJSONUserInfo() {
 		JSONObject args = new JSONObject();

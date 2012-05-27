@@ -91,6 +91,18 @@ games.push({
   game_id : "herpasdf",
 })
 
+games.push({
+  name : "Game #3",
+  owner_name : "Wwhoooooot",
+  game_id : "herpasdf",
+})
+
+games.push({
+  name : "Game #3",
+  owner_name : "Wwhoooooot",
+  game_id : "herpasdf",
+})
+
 // Helper function to get an id
 function get_user(user_id) {
   for (i in clients) {
@@ -108,6 +120,15 @@ function get_game(game_id) {
     }
   }
   console.log("ERROR: GAME not found with id: ", game_id)
+}
+
+function delete_game(game_id) {
+  index = -1
+  for (i in games) {
+    if (games[i].game_id == game_id) {
+      games.pop(i)
+    }
+  }
 }
 
 io.sockets.on('connection', function (socket) {
@@ -169,10 +190,15 @@ io.sockets.on('connection', function (socket) {
   // Owner quits game
   socket.on('end_game', function(data){
 
-    if (data.game_id) {
-      if(game.player) {
-          io.sockets.socket(game.player).emit("endgame", { why: "because you suck"})
+    game = get_game(data.user_id)
+
+    if (game) {
+      delete game.owner.game
+      if (game.player) {
+        delete player.game
+        io.sockets.socket(game.player.user_id).emit("endgame", { why: data.why})
       }
+      delete_game(data.user_id)
     }
   })
 
