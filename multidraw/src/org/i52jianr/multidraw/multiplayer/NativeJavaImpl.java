@@ -10,7 +10,9 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import org.i52jianr.multidraw.NativeFunctions;
+import org.i52jianr.multidraw.multiplayer.callbacks.EndGameHandler;
 import org.i52jianr.multidraw.multiplayer.callbacks.GetGamesHandler;
+import org.i52jianr.multidraw.multiplayer.callbacks.StartGameHandler;
 import org.i52jianr.multidraw.multiplayer.callbacks.UserJoinsHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,8 +22,11 @@ import com.badlogic.gdx.Gdx;
 
 public class NativeJavaImpl implements NativeFunctions {
 
+	private static final String USER_JOINS_CALLBACK = "user_joins";
+	private static final String GET_GAMES_CALLBACK = "get_games";
+	private static final String START_GAME_CALLBACK = "start_game";
+	private static final String END_GAME_CALLBACK = "end_game";
 	public SocketIO socket;
-	public JSONArray games;
 	private String userid;
 	private String username;
 	
@@ -71,8 +76,8 @@ public class NativeJavaImpl implements NativeFunctions {
 					// Horrible code, wish I had more time to refactor and do all this with reflect or templates
 					try {
 						if (on.equals("current_games")) {
-							if (callbacks.containsKey("get_games")) {
-								GetGamesHandler handler = (GetGamesHandler) callbacks.get("get_games");
+							if (callbacks.containsKey(GET_GAMES_CALLBACK)) {
+								GetGamesHandler handler = (GetGamesHandler) callbacks.get(GET_GAMES_CALLBACK);
 								ArrayList<GameDescriptor> games = new ArrayList<GameDescriptor>();
 								JSONArray array = (JSONArray) arguments[0];
 								for (int i = 0; i < array.length(); i++) {
@@ -82,16 +87,29 @@ public class NativeJavaImpl implements NativeFunctions {
 																obj.getString("owner_name")));
 								}
 								handler.onGamesReceived(games);
-								callbacks.remove("get_games");
+								callbacks.remove(GET_GAMES_CALLBACK);
 							}
 						} else if (on.equals("user_id")) {
 							userid =(String) arguments[0]; 
 						} else if (on.equals("joined")) {
-							if (callbacks.containsKey("user_joins")) {
-								UserJoinsHandler handler = (UserJoinsHandler) callbacks.get("user_joins");
+							if (callbacks.containsKey(USER_JOINS_CALLBACK)) {
+								UserJoinsHandler handler = (UserJoinsHandler) callbacks.get(USER_JOINS_CALLBACK);
 								JSONObject obj = (JSONObject) arguments[0];
 								handler.onUserJoined(new User(obj.getString("username"), obj.getString("user_id")));
-								callbacks.remove("user_joins");
+								callbacks.remove(USER_JOINS_CALLBACK);
+							}
+						} else if (on.equals("game_start")) {
+							if (callbacks.containsKey(START_GAME_CALLBACK)) {
+								StartGameHandler handler = (StartGameHandler) callbacks.get(START_GAME_CALLBACK);
+								handler.onGameStarted();
+								callbacks.remove(START_GAME_CALLBACK);
+							}
+						} else if (on.equals("endgame")) {
+							if (callbacks.containsKey(END_GAME_CALLBACK)) {
+								EndGameHandler handler = (EndGameHandler) callbacks.get(START_GAME_CALLBACK);
+								JSONObject rc = (JSONObject) arguments[0];
+								handler.onGameEnd(rc.getString("why"));
+								callbacks.remove(END_GAME_CALLBACK);
 							}
 						}
 					} catch (JSONException e) {
@@ -125,13 +143,13 @@ public class NativeJavaImpl implements NativeFunctions {
 
 	@Override
 	public void getGames(GetGamesHandler handler) {
-		callbacks.put("get_games", handler);
+		callbacks.put(GET_GAMES_CALLBACK, handler);
 		// We could apply filters here
-		socket.emit("get_games");
+		socket.emit(GET_GAMES_CALLBACK);
 	}
 
 	@Override
-	public void createGame(UserJoinsHandler handler) {
+	public void createGame(UserJoinsHandler handler, StartGameHandler startHandler) {
 		
 		JSONObject args = new JSONObject();
 		try {
@@ -144,7 +162,8 @@ public class NativeJavaImpl implements NativeFunctions {
 			e.printStackTrace();
 		}
 		
-		callbacks.put("user_joins", handler);
+		callbacks.put(USER_JOINS_CALLBACK, handler);
+		callbacks.put(START_GAME_CALLBACK, startHandler);
 		socket.emit("create_game", args);
 	}
 
@@ -164,8 +183,11 @@ public class NativeJavaImpl implements NativeFunctions {
 	}
 
 	@Override
-	public void joinGame() {
+	public void joinGame(String gameId, StartGameHandler handler, EndGameHandler endHandler) {
+		callbacks.put(START_GAME_CALLBACK, handler);
+		callbacks.put(END_GAME_CALLBACK, handler);
 		JSONObject args = factoryJSONUserInfo();
+		putJSON(args, "game_id", gameId);
 		
 		socket.emit("join_game", args);
 	}
@@ -181,6 +203,14 @@ public class NativeJavaImpl implements NativeFunctions {
 		}
 		
 		return args;
+	}
+	
+	private void putJSON(JSONObject obj, String key, String value) {
+		try {
+			obj.put(key, value);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }

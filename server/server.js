@@ -125,9 +125,12 @@ io.sockets.on('connection', function (socket) {
   })
 
   // Owner quits game
-  socket.on('end_game', function(data){ 
-    if(game.player) {
-        io.sockets.socket(game.player).emit("endgame")
+  socket.on('end_game', function(data){
+
+    if (data.game_id) {
+      if(game.player) {
+          io.sockets.socket(game.player).emit("endgame", { why: "because you suck"})
+      }
     }
   })
 
@@ -144,7 +147,7 @@ io.sockets.on('connection', function (socket) {
         user = get_user(data.user_id)
 
         game.player = user
-        player.game = game
+        user.game = game
 
         owner_socket = io.sockets.socket(game.owner)
 
@@ -153,7 +156,8 @@ io.sockets.on('connection', function (socket) {
                                   user_id : data.user_id
                                   })
 
-        // socket.emit('start_game', "derp")
+        game.owner.user_socket.emit('game_start')
+        socket.emit('game_start')
       } else {
         console.log("ERROR: That game doesn't exist")
       } 

@@ -2,6 +2,8 @@ package org.i52jianr.multidraw.screens;
 
 import org.i52jianr.multidraw.Multidraw;
 import org.i52jianr.multidraw.multiplayer.User;
+import org.i52jianr.multidraw.multiplayer.callbacks.EndGameHandler;
+import org.i52jianr.multidraw.multiplayer.callbacks.StartGameHandler;
 import org.i52jianr.multidraw.multiplayer.callbacks.UserJoinsHandler;
 
 import com.badlogic.gdx.Gdx;
@@ -22,9 +24,41 @@ public class LobbyScreen implements Screen {
 	private final int ORIGINAL_WIDTH = 320;
 	private final int ORIGINAL_HEIGHT = 480;
 	private Multidraw game;
+	private AssetManager manager;
+	private boolean letsgo;
+	private boolean creating;
+	private String game_id;
 	
-	public LobbyScreen(Multidraw game) {
+	private boolean goBack;
+	private String why;
+	
+	public LobbyScreen(Multidraw game, boolean creating) {
 		this.game = game;
+		this.creating = creating;
+	}
+	
+	public LobbyScreen(Multidraw game, boolean creating, String game_id) {
+		this.game = game;
+		this.creating = creating;
+		this.game_id = game_id;
+		
+		if (!creating) {
+			this.game.nat.joinGame(this.game_id, new StartGameHandler() {
+				
+				@Override
+				public void onGameStarted() {
+					letsgo = true;
+				}
+			}, new EndGameHandler() {
+				
+				@Override
+				public void onGameEnd(String why) {
+					goBack = true;
+					LobbyScreen.this.why = why;
+				}
+			});
+		}
+		
 	}
 	
 	@Override
@@ -32,15 +66,25 @@ public class LobbyScreen implements Screen {
 		Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		
-		cam.update();
-		stage.getSpriteBatch().setProjectionMatrix(cam.combined);
-		stage.act(delta);
-		stage.draw();
+		if (!letsgo && !goBack) {
+			cam.update();
+			stage.getSpriteBatch().setProjectionMatrix(cam.combined);
+			stage.act(delta);
+			stage.draw();
+		} else if (letsgo && !goBack){
+			game.setGameScreen();
+		} else if (goBack && !letsgo) {
+			game.setMenuScreen();
+		}
 	}
 
 	@Override
 	public void resize(int width, int height) {
 		
+	}
+
+	public void setAssetManager(AssetManager manager) {
+		this.manager = manager;
 	}
 
 	@Override
@@ -49,26 +93,28 @@ public class LobbyScreen implements Screen {
 		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		stage = new Stage(ORIGINAL_WIDTH, ORIGINAL_HEIGHT, true, batch);
 		
-		AssetManager manager = new AssetManager();
-		manager.load("data/uiskin.json", Skin.class);
-		
-		while(!manager.update());
-		
 		state = new Label("Waiting...", manager.get("data/uiskin.json", Skin.class));
 		state.x = ORIGINAL_WIDTH / 2 - state.getTextBounds().width / 2;
 		state.y = ORIGINAL_HEIGHT - 100;
 		
 		stage.addActor(state);
 		
-		game.nat.createGame(new UserJoinsHandler() {
-			
-			@Override
-			public void onUserJoined(User user) {
-				state.setText("Somebody Joined!!");
-				state.x = ORIGINAL_WIDTH / 2 - state.getTextBounds().width / 2;
-				state.y = ORIGINAL_HEIGHT - 100;
-			}
-		});
+		if (creating) {
+			game.nat.createGame(new UserJoinsHandler() {
+				@Override
+				public void onUserJoined(User user) {
+					state.setText("Somebody Joined!!");
+					state.x = ORIGINAL_WIDTH / 2 - state.getTextBounds().width / 2;
+					state.y = ORIGINAL_HEIGHT - 100;
+				}
+			}, new StartGameHandler() {
+				// This is partly OK, the owner should start the game
+				@Override
+				public void onGameStarted() {
+					letsgo = true;
+				}
+			});
+		}
 	}
 
 	@Override

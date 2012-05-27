@@ -29,9 +29,14 @@ public class GameListScreen implements Screen {
 	private final int ORIGINAL_WIDTH = 320;
 	private final int ORIGINAL_HEIGHT = 480;
 	private Multidraw game;
+	private AssetManager manager;
 	
 	public GameListScreen(Multidraw game) {
 		this.game = game;
+	}
+	
+	public void setAssetManager(AssetManager manager) {
+		this.manager = manager;
 	}
 	
 	@Override
@@ -59,11 +64,6 @@ public class GameListScreen implements Screen {
 		// I ALWAYS forget this one and drives me crazy
 		Gdx.input.setInputProcessor(stage);
 		
-		AssetManager manager = new AssetManager();
-		manager.load("data/uiskin.json", Skin.class);
-		
-		while(!manager.update());
-		
 		final Skin skin = manager.get("data/uiskin.json", Skin.class);
 		state = new Label("Loading games...", skin);
 		
@@ -75,23 +75,13 @@ public class GameListScreen implements Screen {
 		table.add(state);
 		table.pad(5);
 		
-		Button button = new Button(skin.getStyle(ButtonStyle.class));
-		button.setClickListener(new ClickListener() {
-			
-			@Override
-			public void click(Actor actor, float x, float y) {
-				Gdx.app.log("hasdf", "NooooooooooooooooooooO");
-			}
-		});
-		table.add(button);
-		
 		stage.addActor(table);
 		
 		game.nat.getGames(new GetGamesHandler() {
 			
 			@Override
 			public void onGamesReceived(List<GameDescriptor> games) {
-				for (GameDescriptor gameDesc : games) {
+				for (final GameDescriptor gameDesc : games) {
 					// Create a button or something
 					Label gameName = new Label(gameDesc.getName() + " by " + gameDesc.getOwnerName(), skin);
 					Label joinLabel = new Label("JOIN", skin);
@@ -100,8 +90,7 @@ public class GameListScreen implements Screen {
 						
 						@Override
 						public void click(Actor actor, float x, float y) {
-							Gdx.app.log("WHototsdf", "Clickity click click");
-							game.nat.joinGame(); // With the ID
+							game.setLobbyScreen(false, gameDesc.getGameId());
 						}
 					});
 				

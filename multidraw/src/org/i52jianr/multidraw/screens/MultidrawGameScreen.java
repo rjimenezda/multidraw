@@ -94,6 +94,7 @@ public class MultidrawGameScreen implements Screen {
 	private Button activeBrushButton;
 	
 	Multidraw game;
+	private boolean flag;
 	
 	public MultidrawGameScreen(Multidraw game) {
 		brushButtonsDesc = new ArrayList<BrushButtonDescriptor>();
@@ -124,11 +125,16 @@ public class MultidrawGameScreen implements Screen {
 	
 	}
 	
+	public void setAssetManager(AssetManager manager) {
+		this.manager = manager; 
+	}
+	
 	@Override
 	public void render(float delta) {
 		Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		
+		while(!flag);
 		// We could use event handlers in case of performance drop 
 		setSelectedColor();
 		handleInput();
@@ -163,23 +169,13 @@ public class MultidrawGameScreen implements Screen {
 		stage = new Stage(ORIGINAL_WIDTH, ORIGINAL_HEIGHT, true, batch);
 		
 		Gdx.input.setInputProcessor(stage);
-		Gdx.app.log("INFO", "loading");
-		manager = new AssetManager();
-		manager.load("data/uiskin.json", Skin.class);
-		manager.load("draw-brush.png", Texture.class);
-		manager.load("draw-eraser-2.png", Texture.class);
-		manager.load("edit-clear-2.png", Texture.class);
-		manager.load("format-list-unordered.png", Texture.class);
-		
-		// While things yet to be loaded...
-		while(!manager.update());
-		Gdx.app.log("INFO", "Loaded!");
 		
 		setupUI(manager.get("data/uiskin.json", Skin.class));
 	
 		Gdx.input.setInputProcessor(stage);
 		// Weird alpha if not called wtf
 		drawingArea.clearArea();
+		flag = true; // Finished loading
 	}
 
 	@Override

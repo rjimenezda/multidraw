@@ -26,9 +26,14 @@ public class MultidrawMenuScreen implements Screen {
 	private OrthographicCamera cam;
 	private final int ORIGINAL_WIDTH = 320;
 	private final int ORIGINAL_HEIGHT = 480;
+	private AssetManager manager;
 
 	public MultidrawMenuScreen(Multidraw multidrawGame) {
 		this.game = multidrawGame;
+	}
+
+	public void setAssetManager(AssetManager manager) {
+		this.manager = manager;
 	}
 
 	@Override
@@ -50,15 +55,9 @@ public class MultidrawMenuScreen implements Screen {
 	public void show() {
 		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		cam.setToOrtho(true, ORIGINAL_WIDTH, ORIGINAL_HEIGHT);																																					
-		AssetManager manager = new AssetManager();
 		SpriteBatch batch = new SpriteBatch();
 		stage = new Stage(ORIGINAL_WIDTH, ORIGINAL_HEIGHT, true, batch);
-		
-		manager.load("data/uiskin.json", Skin.class);
-		manager.load("shittylogo.png", Texture.class);
-		
-		while(!manager.update());
-		
+				
 		Skin skin = manager.get("data/uiskin.json", Skin.class);
 		
 		Gdx.input.setInputProcessor(stage);
@@ -84,7 +83,7 @@ public class MultidrawMenuScreen implements Screen {
 			
 			@Override
 			public void click(Actor actor, float x, float y) {
-				game.setGameScreen(new MultidrawGameScreen(game));
+				game.setGameScreen();
 			}
 		});
 		
@@ -92,7 +91,7 @@ public class MultidrawMenuScreen implements Screen {
 			
 			@Override
 			public void click(Actor actor, float x, float y) {
-				game.setLobbyScreen();
+				game.setLobbyScreen(true);
 			}
 		});
 		
@@ -102,8 +101,6 @@ public class MultidrawMenuScreen implements Screen {
 			public void click(Actor actor, float x, float y) {
 				
 				game.setGameListScreen();
-				
-				Gdx.app.log("INFO", "Booting up join game...");
 			}
 		});
 

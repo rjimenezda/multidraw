@@ -11,6 +11,9 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.TextInputListener;
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class Multidraw extends Game {
 	
@@ -18,6 +21,7 @@ public class Multidraw extends Game {
 	private MultidrawGameScreen	gameScreen;
 	public NativeFunctions nat;
 	private String username;
+	private AssetManager manager;
 	
 	public Multidraw(NativeFunctions nat) {
 		this.nat = nat;
@@ -25,7 +29,21 @@ public class Multidraw extends Game {
 	
 	@Override
 	public void create() {
+		manager = new AssetManager();
+		// Menu Screen Assets
+		manager.load("data/uiskin.json", Skin.class);
+		manager.load("shittylogo.png", Texture.class);
+		manager.load("draw-brush.png", Texture.class);
+		manager.load("draw-eraser-2.png", Texture.class);
+		manager.load("edit-clear-2.png", Texture.class);
+		manager.load("format-list-unordered.png", Texture.class);
+		
+		while(!manager.update());
+		
 		menuScreen = new MultidrawMenuScreen(this);
+		menuScreen.setAssetManager(manager);
+		
+		// Ask for the username
 		final Random random = new Random(System.currentTimeMillis());
 		
 		final Preferences prefs = Gdx.app.getPreferences("GAME_PREFS");
@@ -71,25 +89,45 @@ public class Multidraw extends Game {
 		// Profit!
 	}
 	
+	public void setGameScreen() {
+		MultidrawGameScreen game = new MultidrawGameScreen(this);
+		game.setAssetManager(manager);
+		setScreen(game);
+	}
+	
 	public void setGameScreen(MultidrawGameScreen screen) {
+		getScreen().dispose();
 		gameScreen = screen;
 		setScreen(gameScreen);
 		// getScreen().dispose();
 	}
 	
 	public void setMenuScreen() {
+		MultidrawMenuScreen screen = new MultidrawMenuScreen(this);
+		screen.setAssetManager(manager);
 		getScreen().dispose(); // Risky
-		setScreen(menuScreen);
+		setScreen(screen);
 	}
 	
-	public void setLobbyScreen() {
+	public void setLobbyScreen(boolean creating) {
+		LobbyScreen screen = new LobbyScreen(this, creating);
+		screen.setAssetManager(manager);
 		getScreen().dispose();
-		setScreen(new LobbyScreen(this));
+		setScreen(screen);
+	}
+	
+	public void setLobbyScreen(boolean creating, String game_id) {
+		LobbyScreen screen = new LobbyScreen(this, creating, game_id);
+		screen.setAssetManager(manager);
+		getScreen().dispose();
+		setScreen(screen);
 	}
 	
 	public void setGameListScreen() {
+		GameListScreen screen = new GameListScreen(this);
+		screen.setAssetManager(manager);
 		getScreen().dispose();
-		setScreen(new GameListScreen(this));
+		setScreen(screen);
 	}
 	
 	@Override
