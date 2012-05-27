@@ -191,14 +191,21 @@ io.sockets.on('connection', function (socket) {
   // Owner quits game
   socket.on('end_game', function(data){
 
-    game = get_game(data.user_id)
+    game = get_game(data.game_id)
 
     if (game) {
-      delete game.owner.game
-      if (game.player) {
-        delete game.player.game
-        io.sockets.socket(game.player.user_id).emit("endgame", { why: data.why})
+      if (data.user_id == game.owner.user_id) {
+        if (game.player) {
+          io.sockets.socket(game.player.user_id).emit("endgame", { why: data.why})
+        }
+      } else if (data.user_id == game.player.user_id) {
+        if (game.owner) {
+          game.owner.user_socket.emit("endgame", { why : data.why })
+        }
       }
+
+      delete game.player.game
+      delete game.owner.game
       delete_game(data.user_id)
     }
   })
@@ -244,6 +251,7 @@ io.sockets.on('connection', function (socket) {
       if (game) {
         game.player.user_socket.emit("draw", {
           x : data.x,
+
           y : data.y,
           brush : data.brush,
           r : data.r,

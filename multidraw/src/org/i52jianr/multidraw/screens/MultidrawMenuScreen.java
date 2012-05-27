@@ -70,7 +70,7 @@ public class MultidrawMenuScreen implements Screen {
 		
 		Gdx.input.setInputProcessor(stage);
 		
-		alertText = new Label(alert, skin);
+		alertText = new Label(alert == null ? "INFO" : alert, skin);
 		dialog = new Button(alertText, skin.getStyle(ButtonStyle.class));
 		dialog.row();
 		

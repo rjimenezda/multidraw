@@ -61,9 +61,10 @@ public class MultidrawGameScreen extends MultidrawBaseGameScreen {
 	private Button activeBrushButton;
 	
 	private boolean online;
+	private boolean justTouched;
 	
 	public MultidrawGameScreen(Multidraw game) {
-		super(game, "Whatever you want");
+		this(game, "Whatever you want");
 		online = false;
 	}
 	
@@ -157,20 +158,27 @@ public class MultidrawGameScreen extends MultidrawBaseGameScreen {
 			
 			drawingArea.normDraw(touchx - OFFSET_X, touchy - OFFSET_Y);
 			
-			this.game.nat.draw(	touchx, 
-								touchy, 
-								(int)red_slider.getValue(), 
-								(int)green_slider.getValue(), 
-								(int)blue_slider.getValue(), 
-								brushIndex);
-		} else {
+			if (online) {
+				this.game.nat.draw(	touchx, 
+									touchy, 
+									(int)red_slider.getValue(), 
+									(int)green_slider.getValue(), 
+									(int)blue_slider.getValue(), 
+									brushIndex);
+			}
+			
+			justTouched = true;
+		} else if (justTouched) {
 			 drawingArea.removeLast();
-			 this.game.nat.draw(	-1, 
-									-1, 
-									-1, 
-									-1, 
-									-1, 
-									-1);
+			 justTouched = false;
+			 if (online) {
+				 this.game.nat.draw(	-1, 
+										-1, 
+										-1, 
+										-1, 
+										-1, 
+										-1);
+			}
 		}
 	}
 

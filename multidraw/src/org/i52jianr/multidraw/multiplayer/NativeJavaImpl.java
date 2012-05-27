@@ -31,6 +31,7 @@ public class NativeJavaImpl implements NativeFunctions {
 	public SocketIO socket;
 	private String userid;
 	private String username;
+	private String gameId; // Last game joined (or null)
 	
 	public Hashtable<String, Object> callbacks;
 	
@@ -202,7 +203,7 @@ public class NativeJavaImpl implements NativeFunctions {
 		callbacks.put(END_GAME_CALLBACK, endHandler);
 		JSONObject args = factoryJSONUserInfo();
 		putJSON(args, "game_id", gameId);
-		
+		this.gameId = gameId;
 		socket.emit("join_game", args);
 	}
 	
@@ -237,7 +238,9 @@ public class NativeJavaImpl implements NativeFunctions {
 	public void endGame(String why) {
 		JSONObject args = factoryJSONUserInfo();
 		putJSON(args, "why", why);
+		putJSON(args, "game_id", gameId);
 		socket.emit("end_game", args);
+		gameId = null;
 	}
 	
 	/* Helper method */

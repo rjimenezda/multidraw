@@ -2,7 +2,10 @@ package org.i52jianr.multidraw.client;
 
 import org.i52jianr.multidraw.Multidraw;
 import org.i52jianr.multidraw.NativeFunctions;
+import org.i52jianr.multidraw.multiplayer.callbacks.DrawHandler;
+import org.i52jianr.multidraw.multiplayer.callbacks.EndGameHandler;
 import org.i52jianr.multidraw.multiplayer.callbacks.GetGamesHandler;
+import org.i52jianr.multidraw.multiplayer.callbacks.StartGameHandler;
 import org.i52jianr.multidraw.multiplayer.callbacks.UserJoinsHandler;
 
 import com.badlogic.gdx.ApplicationListener;
@@ -50,13 +53,39 @@ public class GwtLauncher extends GwtApplication implements NativeFunctions {
 	}
 
 	@Override
-	public void createGame(UserJoinsHandler handler) {
+	public void createGame(UserJoinsHandler handler,
+			StartGameHandler startHandler) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void joinGame() {
+	public void joinGame(String gameId, StartGameHandler startHandler,
+			EndGameHandler endHandler) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void endGame(String why) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void gameStarted(EndGameHandler endHandler) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void draw(int x, int y, int r, int g, int b, int brush) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onDraw(DrawHandler handler) {
 		// TODO Auto-generated method stub
 		
 	}
