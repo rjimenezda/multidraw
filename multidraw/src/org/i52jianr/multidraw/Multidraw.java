@@ -5,6 +5,7 @@ import java.util.Random;
 import org.i52jianr.multidraw.screens.GameListScreen;
 import org.i52jianr.multidraw.screens.LobbyScreen;
 import org.i52jianr.multidraw.screens.MultidrawGameScreen;
+import org.i52jianr.multidraw.screens.MultidrawGuessScreen;
 import org.i52jianr.multidraw.screens.MultidrawMenuScreen;
 
 import com.badlogic.gdx.Game;
@@ -90,16 +91,21 @@ public class Multidraw extends Game {
 	}
 	
 	public void setGameScreen() {
-		MultidrawGameScreen game = new MultidrawGameScreen(this);
+		MultidrawGameScreen game = new MultidrawGameScreen(this, "Whatever you want"); 
 		game.setAssetManager(manager);
 		setScreen(game);
 	}
 	
-	public void setGameScreen(MultidrawGameScreen screen) {
-		getScreen().dispose();
-		gameScreen = screen;
-		setScreen(gameScreen);
-		// getScreen().dispose();
+	public void setGuessScreen(String word) {
+		MultidrawGuessScreen game = new MultidrawGuessScreen(this, word); 
+		game.setAssetManager(manager);
+		setScreen(game);
+	}
+	
+	public void setGameScreen(String word) {
+		MultidrawGameScreen game = new MultidrawGameScreen(this, word); 
+		game.setAssetManager(manager);
+		setScreen(game);
 	}
 	
 	public void setMenuScreen() {

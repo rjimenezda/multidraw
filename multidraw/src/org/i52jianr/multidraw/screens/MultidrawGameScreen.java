@@ -3,13 +3,12 @@ package org.i52jianr.multidraw.screens;
 import java.util.ArrayList;
 
 import org.i52jianr.multidraw.Brush;
+import org.i52jianr.multidraw.BrushButtonDescriptor;
 import org.i52jianr.multidraw.Brushes;
 import org.i52jianr.multidraw.DrawingArea;
 import org.i52jianr.multidraw.Multidraw;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -30,41 +29,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.tablelayout.Table;
 import com.badlogic.gdx.utils.Scaling;
 
-class BrushButtonDescriptor {
-	private Brush brush;
-	private int x;
-	private int y;
-	
-	public BrushButtonDescriptor(Brush brush, int x, int y) {
-		super();
-		this.brush = brush;
-		this.x = x;
-		this.y = y;
-	}
-	
-	public int getX() {
-		return x;
-	}
-	
-	public int getY() {
-		return y;
-	}
-	
-	public Brush getBrush() {
-		return brush;
-	}
-}
+public class MultidrawGameScreen extends MultidrawBaseGameScreen {
 
-public class MultidrawGameScreen implements Screen {
-
-    private OrthographicCamera cam;
-	private DrawingArea drawingArea;
-	private SpriteBatch batch;
-	
 	private final int OFFSET_X = 31;
 	private final int OFFSET_Y = 16;
-	private final int ORIGINAL_WIDTH = 320;
-	private final int ORIGINAL_HEIGHT = 480;
 	
 	private int red_x = 25;
 	private int red_y = 80;
@@ -79,24 +47,23 @@ public class MultidrawGameScreen implements Screen {
 	private float scaleY = 1.0f;
 	
 	/* UI Stuff */
-	private Stage stage;
 	private Slider red_slider;
 	private Slider blue_slider;
 	private Slider green_slider;
 	private Pixmap colorPreview;
 	private Texture colorPreviewTexture;
-	private AssetManager manager;
 	
 	private ArrayList<BrushButtonDescriptor> brushButtonsDesc;
 	private ArrayList<Button> brushButtons;
-	private int canvasSize;
 	
 	private Button activeBrushButton;
 	
-	Multidraw game;
-	private boolean flag;
-	
 	public MultidrawGameScreen(Multidraw game) {
+		super(game, null);
+	}
+	
+	public MultidrawGameScreen(Multidraw game, String word) {
+		super(game, word);
 		brushButtonsDesc = new ArrayList<BrushButtonDescriptor>();
 		brushButtons = new ArrayList<Button>();
 		
@@ -112,21 +79,6 @@ public class MultidrawGameScreen implements Screen {
 		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.square5, red_x + 135, red_y + 35));
 		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.square11, red_x + 180, red_y + 35));
 		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.square15, red_x + 225, red_y + 35));
-		
-		canvasSize = 256; // Default
-		
-		this.game = game;
-	}
-	
-	public MultidrawGameScreen(ArrayList<BrushButtonDescriptor> list, int size) {
-		brushButtonsDesc = list;
-		canvasSize = size;
-		brushButtons = new ArrayList<Button>();
-	
-	}
-	
-	public void setAssetManager(AssetManager manager) {
-		this.manager = manager; 
 	}
 	
 	@Override
@@ -202,12 +154,10 @@ public class MultidrawGameScreen implements Screen {
 	
 	@Override
 	public void pause() {
-		Gdx.app.log("INFO", "Pausing...");
 	}
 
 	@Override
 	public void resume() {
-		Gdx.app.log("INFO", "Resuming...");
 		
 		for(Button button : brushButtons) {
 			stage.removeActor(button);
@@ -228,7 +178,7 @@ public class MultidrawGameScreen implements Screen {
 		batch.dispose();
 	}
 
-	private void setupUI(final Skin skin) {
+	protected void setupUI(final Skin skin) {
 		Label red_label = new Label(skin);
 		red_label.setText("R");
 		Label green_label = new Label(skin);
@@ -284,7 +234,7 @@ public class MultidrawGameScreen implements Screen {
 		colorPreviewTexture.bind();
 
 		Label drawThis = new Label(manager.get("data/uiskin.json", Skin.class));
-		drawThis.setText("Dibuja...La Dignidad");
+		drawThis.setText("Draw..." + word);
 		drawThis.x = (ORIGINAL_WIDTH / 2) - (drawThis.getTextBounds().width / 2);
 		drawThis.y = ORIGINAL_HEIGHT - OFFSET_Y + 5;
 		
@@ -357,16 +307,25 @@ public class MultidrawGameScreen implements Screen {
 	}
 
 	// Overloading is cool
-	private void setSelectedColor() {
+	protected void setSelectedColor() {
 		setSelectedColor(new Color(red_slider.getValue() / 255.0f, green_slider.getValue()  / 255.0f, blue_slider.getValue() / 255.0f, 1.0f));
 	}
 	
-	private void setSelectedColor(Color color) {
+	protected void setSelectedColor(Color color) {
 		colorPreview.setColor(color);
 		colorPreview.fill();
 		drawingArea.setColor(color);
 	}
 	
+	/**
+	 * Auxiliary function that generates a Button from a Brush
+	 * @author Román Jiménez
+	 * @param brush {@link Brush} to generate {@link Button} from
+	 * @param skin Skinfile to use
+	 * @param x Position in horizontal axis
+	 * @param y Position in vertical axis
+	 * @return {@link Button} representation of the {@link Brush}
+	 */
 	private Button brushButtonFactory(final Brush brush, final Skin skin, int x, int y) {
 		Texture text = new Texture(brush.getPixmap());
 		text.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
