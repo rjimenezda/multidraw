@@ -156,7 +156,10 @@ public class MultidrawGameScreen extends MultidrawBaseGameScreen {
 			touchx = Math.round(touchx * scaleX);
 			touchy = Math.round(touchy * scaleY);
 			
-			drawingArea.normDraw(touchx - OFFSET_X, touchy - OFFSET_Y);
+			touchx -= OFFSET_X;
+			touchy -= OFFSET_Y;
+			
+			drawingArea.normDraw(touchx, touchy);
 			
 			if (online) {
 				int r = 255;
@@ -168,6 +171,9 @@ public class MultidrawGameScreen extends MultidrawBaseGameScreen {
 					g = (int)green_slider.getValue();
 					b = (int)blue_slider.getValue();
 				}
+				
+				touchx = (touchx * 256) / 256;
+				touchy = ((256 - touchy) * 256) / 256;
 				
 				this.game.nat.draw(	touchx, 
 									touchy, 
