@@ -7,6 +7,7 @@ import org.i52jianr.multidraw.BrushButtonDescriptor;
 import org.i52jianr.multidraw.Brushes;
 import org.i52jianr.multidraw.DrawingArea;
 import org.i52jianr.multidraw.Multidraw;
+import org.i52jianr.multidraw.multiplayer.callbacks.EndGameHandler;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -55,15 +56,29 @@ public class MultidrawGameScreen extends MultidrawBaseGameScreen {
 	
 	private ArrayList<BrushButtonDescriptor> brushButtonsDesc;
 	private ArrayList<Button> brushButtons;
+	private int brushIndex;
 	
 	private Button activeBrushButton;
 	
+	private boolean online;
+	
 	public MultidrawGameScreen(Multidraw game) {
-		super(game, null);
+		super(game, "Whatever you want");
+		online = false;
 	}
 	
 	public MultidrawGameScreen(Multidraw game, String word) {
 		super(game, word);
+		
+		this.game.nat.gameStarted(new EndGameHandler() {
+			
+			@Override
+			public void onGameEnd(String why) {
+				MultidrawGameScreen.this.game.setMenuScreen(why);
+			}
+		});
+		
+		online = true;
 		brushButtonsDesc = new ArrayList<BrushButtonDescriptor>();
 		brushButtons = new ArrayList<Button>();
 		
@@ -141,8 +156,21 @@ public class MultidrawGameScreen extends MultidrawBaseGameScreen {
 			touchy = Math.round(touchy * scaleY);
 			
 			drawingArea.normDraw(touchx - OFFSET_X, touchy - OFFSET_Y);
+			
+			this.game.nat.draw(	touchx, 
+								touchy, 
+								(int)red_slider.getValue(), 
+								(int)green_slider.getValue(), 
+								(int)blue_slider.getValue(), 
+								brushIndex);
 		} else {
 			 drawingArea.removeLast();
+			 this.game.nat.draw(	-1, 
+									-1, 
+									-1, 
+									-1, 
+									-1, 
+									-1);
 		}
 	}
 
@@ -166,7 +194,7 @@ public class MultidrawGameScreen extends MultidrawBaseGameScreen {
 		brushButtons.clear();
 		
 		for(BrushButtonDescriptor desc : brushButtonsDesc) {
-			Button tmp = brushButtonFactory(desc.getBrush(), manager.get("data/uiskin.json", Skin.class), desc.getX(), desc.getY());
+			Button tmp = brushButtonFactory(desc.getBrush(), manager.get("data/uiskin.json", Skin.class), desc.getX(), desc.getY(), brushButtonsDesc.indexOf(desc));
 			brushButtons.add(tmp);
 			stage.addActor(tmp);
 		}
@@ -187,12 +215,13 @@ public class MultidrawGameScreen extends MultidrawBaseGameScreen {
 		blue_label.setText("B");
 		
 		for(BrushButtonDescriptor desc : brushButtonsDesc) {
-			Button tmp = brushButtonFactory(desc.getBrush(), skin, desc.getX(), desc.getY());
+			Button tmp = brushButtonFactory(desc.getBrush(), skin, desc.getX(), desc.getY(), brushButtonsDesc.indexOf(desc));
 			brushButtons.add(tmp);
 			stage.addActor(tmp);
 		}
 		
 		// Setting up initial state, not my best work but hey
+		brushIndex = 0;
 		activeBrushButton = brushButtons.get(0);
 		activeBrushButton.setStyle(skin.getStyle("checked", ButtonStyle.class));
 
@@ -285,6 +314,9 @@ public class MultidrawGameScreen extends MultidrawBaseGameScreen {
 			
 			@Override
 			public void click(Actor actor, float x, float y) {
+				if (online) {
+					game.nat.endGame("Server closed the game");
+				}
 				game.setMenuScreen();
 			}
 		});
@@ -326,7 +358,7 @@ public class MultidrawGameScreen extends MultidrawBaseGameScreen {
 	 * @param y Position in vertical axis
 	 * @return {@link Button} representation of the {@link Brush}
 	 */
-	private Button brushButtonFactory(final Brush brush, final Skin skin, int x, int y) {
+	private Button brushButtonFactory(final Brush brush, final Skin skin, int x, int y, final int index) {
 		Texture text = new Texture(brush.getPixmap());
 		text.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
 		text.bind();
@@ -339,7 +371,8 @@ public class MultidrawGameScreen extends MultidrawBaseGameScreen {
 				if (!activeBrushButton.equals(button)) {
 					button.setStyle(skin.getStyle("checked", ButtonStyle.class));
 					activeBrushButton.setStyle(skin.getStyle("unchecked", ButtonStyle.class));
-					activeBrushButton = button;	
+					activeBrushButton = button;
+					brushIndex = index;
 				}
 			}
 		});

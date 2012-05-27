@@ -161,6 +161,7 @@ io.sockets.on('connection', function (socket) {
         name : games[i].name,
         owner_name : games[i].owner_name,
         game_id : games[i].game_id,
+        word : games[i].word
       })
     }
 
@@ -224,8 +225,8 @@ io.sockets.on('connection', function (socket) {
                                   user_id : data.user_id
                                   })
 
-        game.owner.user_socket.emit('game_start')
-        socket.emit('game_start')
+        game.owner.user_socket.emit('game_start', { word : game.word })
+        socket.emit('game_start', { word : game.word })
       } else {
         console.log("ERROR: That game doesn't exist")
         socket.emit("endgame", { why : "That game doesn't exist anymore" })
@@ -235,18 +236,27 @@ io.sockets.on('connection', function (socket) {
   })
 
   // Paint action
-  socket.on('paint', function(data) {
-    console.log('Painted at x:', data.x, ' y:', data.y)
-    if (game.player) {
-      io.sockets.socket(game.player).emit("paint", {
-        x : data.x,
-        y : data.y,
-        brush : data.brush,
-        r : data.r,
-        g : data.g,
-        b : data.b
-      })
+  socket.on('draw', function(data) {
+    console.log("Drawing!!")
+    user = get_user(data.user_id)
+    if (user) {
+      game = user.game
+      if (game) {
+        game.player.user_socket.emit("draw", {
+          x : data.x,
+          y : data.y,
+          brush : data.brush,
+          r : data.r,
+          g : data.g,
+          b : data.b
+        })
+      } else {
+        console.log("No game!")
+      }  
+    } else {
+      console.log("That's no user!!")
     }
+    
   })
 
   // Maybe I won't use these...

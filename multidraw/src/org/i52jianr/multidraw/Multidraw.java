@@ -91,7 +91,7 @@ public class Multidraw extends Game {
 	}
 	
 	public void setGameScreen() {
-		MultidrawGameScreen game = new MultidrawGameScreen(this, "Whatever you want"); 
+		MultidrawGameScreen game = new MultidrawGameScreen(this); 
 		game.setAssetManager(manager);
 		setScreen(game);
 	}

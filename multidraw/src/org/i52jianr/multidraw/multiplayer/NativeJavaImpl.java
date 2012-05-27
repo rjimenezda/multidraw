@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 import org.i52jianr.multidraw.NativeFunctions;
+import org.i52jianr.multidraw.multiplayer.callbacks.DrawHandler;
 import org.i52jianr.multidraw.multiplayer.callbacks.EndGameHandler;
 import org.i52jianr.multidraw.multiplayer.callbacks.GetGamesHandler;
 import org.i52jianr.multidraw.multiplayer.callbacks.StartGameHandler;
@@ -26,6 +27,7 @@ public class NativeJavaImpl implements NativeFunctions {
 	private static final String GET_GAMES_CALLBACK = "get_games";
 	private static final String START_GAME_CALLBACK = "start_game";
 	private static final String END_GAME_CALLBACK = "end_game";
+	protected static final String DRAW_CALLBACK = "draw";
 	public SocketIO socket;
 	private String userid;
 	private String username;
@@ -101,7 +103,8 @@ public class NativeJavaImpl implements NativeFunctions {
 						} else if (on.equals("game_start")) {
 							if (callbacks.containsKey(START_GAME_CALLBACK)) {
 								StartGameHandler handler = (StartGameHandler) callbacks.get(START_GAME_CALLBACK);
-								handler.onGameStarted();
+								JSONObject obj = (JSONObject) arguments[0];
+								handler.onGameStarted(obj.getString("word"));
 								callbacks.remove(START_GAME_CALLBACK);
 							}
 						} else if (on.equals("endgame")) {
@@ -110,6 +113,17 @@ public class NativeJavaImpl implements NativeFunctions {
 								JSONObject rc = (JSONObject) arguments[0];
 								handler.onGameEnd(rc.getString("why"));
 								callbacks.remove(END_GAME_CALLBACK);
+							}
+						} else if (on.equals("draw")) {
+							if (callbacks.containsKey(DRAW_CALLBACK)) {
+								DrawHandler handler = (DrawHandler) callbacks.get(DRAW_CALLBACK);
+								JSONObject rc = (JSONObject) arguments[0];
+								handler.onDraw(	rc.getInt("x"), 
+												rc.getInt("y"), 
+												rc.getInt("r"), 
+												rc.getInt("g"), 
+												rc.getInt("b"), 
+												rc.getInt("brush"));
 							}
 						}
 					} catch (JSONException e) {
@@ -193,9 +207,36 @@ public class NativeJavaImpl implements NativeFunctions {
 	}
 	
 	@Override
-	public void endGame() {
+	public void gameStarted(EndGameHandler endHandler) {
+		callbacks.put(END_GAME_CALLBACK, endHandler);
+	}
+	
+	@Override
+	public void onDraw(DrawHandler handler) {
+		callbacks.put(DRAW_CALLBACK, handler);
+	}
+	
+	@Override
+	public void draw(int x, int y, int r, int g, int b, int brush) {
+		JSONObject args = new JSONObject();
+		try {
+			args.put("x", x);
+			args.put("y", y);
+			args.put("r", r);
+			args.put("g", g);
+			args.put("b", b);
+			args.put("brush", brush);
+			args.put("user_id", userid);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		socket.emit("draw", args);
+	}
+	
+	@Override
+	public void endGame(String why) {
 		JSONObject args = factoryJSONUserInfo();
-		putJSON(args, "why", "Server stopped the game");
+		putJSON(args, "why", why);
 		socket.emit("end_game", args);
 	}
 	

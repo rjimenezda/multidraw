@@ -1,5 +1,6 @@
 package org.i52jianr.multidraw;
 
+import org.i52jianr.multidraw.multiplayer.callbacks.DrawHandler;
 import org.i52jianr.multidraw.multiplayer.callbacks.EndGameHandler;
 import org.i52jianr.multidraw.multiplayer.callbacks.GetGamesHandler;
 import org.i52jianr.multidraw.multiplayer.callbacks.StartGameHandler;
@@ -19,6 +20,12 @@ public interface NativeFunctions {
 
 	void byebye();
 
-	void endGame();
+	void endGame(String why);
+
+	void gameStarted(EndGameHandler endHandler);
+
+	void draw(int x, int y, int r, int g, int b, int brush);
+
+	void onDraw(DrawHandler handler);
 }
 

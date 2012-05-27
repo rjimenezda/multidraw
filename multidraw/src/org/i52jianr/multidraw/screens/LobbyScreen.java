@@ -37,6 +37,7 @@ public class LobbyScreen implements Screen {
 	
 	private boolean goBack;
 	private String why;
+	protected String word;
 	
 	public LobbyScreen(Multidraw game, boolean creating) {
 		this.game = game;
@@ -52,7 +53,8 @@ public class LobbyScreen implements Screen {
 			this.game.nat.joinGame(this.game_id, new StartGameHandler() {
 				
 				@Override
-				public void onGameStarted() {
+				public void onGameStarted(String word) {
+					LobbyScreen.this.word = word;
 					letsgo = true;
 				}
 			}, new EndGameHandler() {
@@ -78,7 +80,11 @@ public class LobbyScreen implements Screen {
 			stage.act(delta);
 			stage.draw();
 		} else if (letsgo && !goBack){
-			game.setGameScreen();
+			if (creating) {
+				game.setGameScreen(word);	
+			} else {
+				game.setGuessScreen(word);
+			}
 		} else if (goBack && !letsgo) {
 			game.setMenuScreen(why);
 		}
@@ -107,7 +113,7 @@ public class LobbyScreen implements Screen {
 			@Override
 			public void click(Actor actor, float x, float y) {
 				if (creating) {
-					game.nat.endGame();
+					game.nat.endGame("Server closed the game");
 				}
 				game.setMenuScreen();
 				
@@ -133,7 +139,8 @@ public class LobbyScreen implements Screen {
 			}, new StartGameHandler() {
 				// This is partly OK, the owner should start the game
 				@Override
-				public void onGameStarted() {
+				public void onGameStarted(String word) {
+					LobbyScreen.this.word = word;
 					letsgo = true;
 				}
 			});

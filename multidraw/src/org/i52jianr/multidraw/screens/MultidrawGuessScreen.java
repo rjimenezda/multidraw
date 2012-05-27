@@ -1,9 +1,16 @@
 package org.i52jianr.multidraw.screens;
 
+import java.util.ArrayList;
+
+import org.i52jianr.multidraw.BrushButtonDescriptor;
+import org.i52jianr.multidraw.Brushes;
 import org.i52jianr.multidraw.DrawingArea;
 import org.i52jianr.multidraw.Multidraw;
+import org.i52jianr.multidraw.multiplayer.callbacks.DrawHandler;
+import org.i52jianr.multidraw.multiplayer.callbacks.EndGameHandler;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.TextInputListener;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -13,8 +20,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Scaling;
 
@@ -28,9 +37,53 @@ public class MultidrawGuessScreen extends MultidrawBaseGameScreen {
 	private final int OFFSET_Y = 16;
 	private float scaleX = 1.0f;
 	private float scaleY = 1.0f;
+	private Label status;
+	
+	private ArrayList<BrushButtonDescriptor> brushButtonsDesc;
 		
 	public MultidrawGuessScreen(Multidraw game, String word) {
 		super(game, word);
+		
+		brushButtonsDesc = new ArrayList<BrushButtonDescriptor>();
+		
+		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.pixel, 0, 0));
+		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.round, 0, 0));
+		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.round7, 0, 0));
+		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.round11, 0, 0));
+		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.crossSmooth, 0, 0));
+		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.smooth5, 0, 0));
+		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.smooth7, 0, 0));
+		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.smooth11, 0, 0));
+		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.square3, 0, 0));
+		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.square5, 0, 0));
+		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.square11, 0, 0));
+		brushButtonsDesc.add(new BrushButtonDescriptor(Brushes.square15, 0, 0));
+		
+		this.game.nat.onDraw(new DrawHandler() {
+			
+			@Override
+			public void onDraw(int x, int y, int r, int g, int b, int brush) {
+				if (x == -1 && y == -1) {
+					drawingArea.removeLast();
+				} else {
+					drawingArea.setBrush(brushButtonsDesc.get(brush).getBrush());
+					setSelectedColor(new Color(r/255.0f, g/255.0f, b/255.0f, 1.0f));
+					x *= scaleX;
+					y *= scaleY;
+					
+					drawingArea.normDraw(x - OFFSET_X, y - OFFSET_Y);	
+				}
+				
+			}
+		});
+		
+		this.game.nat.gameStarted(new EndGameHandler() {
+			
+			@Override
+			public void onGameEnd(String why) {
+				MultidrawGuessScreen.this.game.setMenuScreen(why);
+			}
+		});
 	}
 	
 	@Override
@@ -102,14 +155,56 @@ public class MultidrawGuessScreen extends MultidrawBaseGameScreen {
 
 	protected void setupUI(final Skin skin) {
 		
-		/* TODO: Add guess button + textinput */
+		status = new Label("WRONG", skin);
+		stage.addActor(status);
+		
+		status.x = ORIGINAL_WIDTH / 2 - status.getTextBounds().width / 2;
+		status.y = OFFSET_Y + 70;
+		status.visible = false;
+		
+		Button guessbutton = new Button(new Label("GUESS", skin), skin.getStyle(ButtonStyle.class));
+		
+		guessbutton.setClickListener(new ClickListener() {
+			
+			@Override
+			public void click(Actor actor, float x, float y) {
+				Gdx.input.getPlaceholderTextInput(new TextInputListener() {
+					
+					@Override
+					public void input(String text) {
+						status.visible = true;
+						if (word != null) {
+							// Yep, we're making a local check
+							if(text.toLowerCase().equals(word.toLowerCase())) {
+								setStatus("YOU WIN", Color.GREEN);
+								// Send command to network
+							} else {
+								setStatus("WRONG", Color.RED);
+							}
+						}
+					}
+					
+					@Override
+					public void canceled() {
+						// Nothing to do here...
+					}
+				}, "Guess the word", "Your guess...");
+			}
+		});
+		
+		stage.addActor(guessbutton);
+		guessbutton.x = ORIGINAL_WIDTH / 2 - guessbutton.width / 2;
+		guessbutton.y = OFFSET_Y + 100;
 		
 		Button menu_button = new Button(new Image(manager.get("format-list-unordered.png", Texture.class), Scaling.fill), manager.get("data/uiskin.json", Skin.class));
+		menu_button.x = 10;
+		menu_button.y = 10;
 		
 		menu_button.setClickListener(new ClickListener() {
 			
 			@Override
 			public void click(Actor actor, float x, float y) {
+				game.nat.endGame("Player quit...");
 				game.setMenuScreen();
 			}
 		});
@@ -124,6 +219,12 @@ public class MultidrawGuessScreen extends MultidrawBaseGameScreen {
 	protected void setSelectedColor(Color color) {
 		// Get color from last message received
 		drawingArea.setColor(color);
+	}
+	
+	private void setStatus(String text, Color color) {
+		status.setColor(color);
+		status.setText(text);
+		status.x = ORIGINAL_WIDTH / 2 - status.getTextBounds().width / 2;
 	}
 
 }

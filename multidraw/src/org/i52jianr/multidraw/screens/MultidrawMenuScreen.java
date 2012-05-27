@@ -103,7 +103,8 @@ public class MultidrawMenuScreen implements Screen {
 			
 			@Override
 			public void click(Actor actor, float x, float y) {
-				game.setGuessScreen(null);
+				// Testing
+				game.setGuessScreen("Dignity");
 			}
 		});
 		
