@@ -49,6 +49,48 @@ games.push({
   game_id : "herpasdf",
 })
 
+games.push({
+  name : "Game #3",
+  owner_name : "Wwhoooooot",
+  game_id : "herpasdf",
+})
+
+games.push({
+  name : "Game #3",
+  owner_name : "Wwhoooooot",
+  game_id : "herpasdf",
+})
+
+games.push({
+  name : "Game #3",
+  owner_name : "Wwhoooooot",
+  game_id : "herpasdf",
+})
+
+games.push({
+  name : "Game #3",
+  owner_name : "Wwhoooooot",
+  game_id : "herpasdf",
+})
+
+games.push({
+  name : "Game #3",
+  owner_name : "Wwhoooooot",
+  game_id : "herpasdf",
+})
+
+games.push({
+  name : "Game #3",
+  owner_name : "Wwhoooooot",
+  game_id : "herpasdf",
+})
+
+games.push({
+  name : "Game #3",
+  owner_name : "Wwhoooooot",
+  game_id : "herpasdf",
+})
+
 // Helper function to get an id
 function get_user(user_id) {
   for (i in clients) {

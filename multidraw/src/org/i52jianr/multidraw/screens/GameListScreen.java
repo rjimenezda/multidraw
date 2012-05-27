@@ -11,15 +11,19 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Button.ButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.ui.FlickScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.tablelayout.Table;
+import com.badlogic.gdx.utils.Scaling;
 
 public class GameListScreen implements Screen {
 
@@ -68,15 +72,23 @@ public class GameListScreen implements Screen {
 		state = new Label("Loading games...", skin);
 		
 		final Table table = new Table(skin);
+		final FlickScrollPane pane = new FlickScrollPane();
 		
-		table.x = ORIGINAL_WIDTH / 2;
-		table.y = ORIGINAL_HEIGHT - 150;
-		
-		table.add(state);
-		table.pad(5);
-		
-		stage.addActor(table);
-		
+		stage.addActor(state);
+		state.x = ORIGINAL_WIDTH / 2 - state.getTextBounds().width / 2;
+		state.y = ORIGINAL_HEIGHT - state.getTextBounds().height - 10;
+				
+		final Button menu_button = new Button(new Image(manager.get("format-list-unordered.png", Texture.class), Scaling.fill), manager.get("data/uiskin.json", Skin.class));
+		menu_button.setClickListener(new ClickListener() {
+			
+			@Override
+			public void click(Actor actor, float x, float y) {
+				game.setMenuScreen();
+			}
+		});
+		menu_button.x = 10;
+		menu_button.y = 10;
+				
 		game.nat.getGames(new GetGamesHandler() {
 			
 			@Override
@@ -94,13 +106,21 @@ public class GameListScreen implements Screen {
 						}
 					});
 				
-					table.add(gameName).pad(5);
-					table.add(button).pad(5);
-					table.row();
+					table.add(gameName);
+					table.add(button);
+					table.row().pad(5);
 				}
 				state.setText("Game list:");
+				state.x = ORIGINAL_WIDTH / 2 - state.getTextBounds().width / 2;
+				
+				pane.setWidget(table);
+				pane.width = ORIGINAL_WIDTH;
+				pane.height = ORIGINAL_HEIGHT - 30;
+				stage.addActor(pane);
+				stage.addActor(menu_button);
 			}
 		});
+				
 	}
 
 	@Override
