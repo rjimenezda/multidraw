@@ -109,5 +109,9 @@ public class DrawingArea {
 		pixmap.drawPixmap(minipixmap, 0, 0, size, size, 0, 0, 256, 256);
 		minipixmap.setColor(frontColor);
 	}
+	
+	public boolean isEraseMode() {
+		return eraseMode;
+	}
 
 }

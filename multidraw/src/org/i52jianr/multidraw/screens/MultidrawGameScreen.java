@@ -159,11 +159,21 @@ public class MultidrawGameScreen extends MultidrawBaseGameScreen {
 			drawingArea.normDraw(touchx - OFFSET_X, touchy - OFFSET_Y);
 			
 			if (online) {
+				int r = 255;
+				int g = 255;
+				int b = 255;
+				
+				if (!drawingArea.isEraseMode()) {
+					r = (int)red_slider.getValue();
+					g = (int)green_slider.getValue();
+					b = (int)blue_slider.getValue();
+				}
+				
 				this.game.nat.draw(	touchx, 
 									touchy, 
-									(int)red_slider.getValue(), 
-									(int)green_slider.getValue(), 
-									(int)blue_slider.getValue(), 
+									r,
+									g,
+									b,
 									brushIndex);
 			}
 			

@@ -27,5 +27,7 @@ public interface NativeFunctions {
 	void draw(int x, int y, int r, int g, int b, int brush);
 
 	void onDraw(DrawHandler handler);
+	
+	void cleanCallbacks();
 }
 

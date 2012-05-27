@@ -34,6 +34,7 @@ public class MultidrawMenuScreen implements Screen {
 	public MultidrawMenuScreen(Multidraw multidrawGame, String alert) {
 		this.game = multidrawGame;
 		this.alert = alert;
+		this.game.nat.cleanCallbacks();
 	}
 
 	public void setAssetManager(AssetManager manager) {
@@ -45,7 +46,7 @@ public class MultidrawMenuScreen implements Screen {
 		Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		
-		if (alert != null) {
+		if (alert != null && dialog != null) {
 			dialog.visible = true;
 		}
 		

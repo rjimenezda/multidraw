@@ -204,9 +204,14 @@ io.sockets.on('connection', function (socket) {
         }
       }
 
-      delete game.player.game
+      if (game.player) {
+        delete game.player.game
+      }
       delete game.owner.game
-      delete_game(data.user_id)
+      delete_game(data.game_id)
+
+    } else {
+      console.log("NO SUCH GAME")
     }
   })
 

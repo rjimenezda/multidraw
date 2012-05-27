@@ -125,6 +125,7 @@ public class MultidrawGuessScreen extends MultidrawBaseGameScreen {
 		Gdx.input.setInputProcessor(stage);
 		// Weird alpha if not called wtf
 		drawingArea.clearArea();
+		resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 	}
 
 	@Override

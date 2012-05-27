@@ -238,7 +238,11 @@ public class NativeJavaImpl implements NativeFunctions {
 	public void endGame(String why) {
 		JSONObject args = factoryJSONUserInfo();
 		putJSON(args, "why", why);
-		putJSON(args, "game_id", gameId);
+		if (gameId != null) {
+			putJSON(args, "game_id", gameId);
+		} else {
+			putJSON(args, "game_id", userid);
+		}
 		socket.emit("end_game", args);
 		gameId = null;
 	}
@@ -262,6 +266,11 @@ public class NativeJavaImpl implements NativeFunctions {
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void cleanCallbacks() {
+		callbacks.clear();
 	}
 	
 }
