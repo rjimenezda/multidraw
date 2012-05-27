@@ -245,8 +245,8 @@ public class MultidrawGameScreen extends MultidrawBaseGameScreen {
 		}
 		
 		// Setting up initial state, not my best work but hey
-		brushIndex = 0;
-		activeBrushButton = brushButtons.get(0);
+		brushIndex = 2;
+		activeBrushButton = brushButtons.get(2);
 		activeBrushButton.setStyle(skin.getStyle("checked", ButtonStyle.class));
 
 		red_slider = new Slider(0, 255, 1, skin.getStyle(SliderStyle.class), "slider");
