@@ -40,7 +40,7 @@ public class Multidraw extends Game {
 		
 		while(!manager.update());
 		
-		menuScreen = new MultidrawMenuScreen(this);
+		menuScreen = new MultidrawMenuScreen(this, null);
 		menuScreen.setAssetManager(manager);
 		
 		// Ask for the username
@@ -103,7 +103,11 @@ public class Multidraw extends Game {
 	}
 	
 	public void setMenuScreen() {
-		MultidrawMenuScreen screen = new MultidrawMenuScreen(this);
+		setMenuScreen(null);
+	}
+	
+	public void setMenuScreen(String why) {
+		MultidrawMenuScreen screen = new MultidrawMenuScreen(this, why);
 		screen.setAssetManager(manager);
 		getScreen().dispose(); // Risky
 		setScreen(screen);

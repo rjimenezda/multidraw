@@ -27,9 +27,13 @@ public class MultidrawMenuScreen implements Screen {
 	private final int ORIGINAL_WIDTH = 320;
 	private final int ORIGINAL_HEIGHT = 480;
 	private AssetManager manager;
+	private String alert;
+	private Button dialog;
+	private Label alertText;
 
-	public MultidrawMenuScreen(Multidraw multidrawGame) {
+	public MultidrawMenuScreen(Multidraw multidrawGame, String alert) {
 		this.game = multidrawGame;
+		this.alert = alert;
 	}
 
 	public void setAssetManager(AssetManager manager) {
@@ -40,6 +44,10 @@ public class MultidrawMenuScreen implements Screen {
 	public void render(float delta) {
 		Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		
+		if (alert != null) {
+			dialog.visible = true;
+		}
 		
 		cam.update();
 		stage.getSpriteBatch().setProjectionMatrix(cam.combined);
@@ -61,6 +69,26 @@ public class MultidrawMenuScreen implements Screen {
 		Skin skin = manager.get("data/uiskin.json", Skin.class);
 		
 		Gdx.input.setInputProcessor(stage);
+		
+		alertText = new Label(alert, skin);
+		dialog = new Button(alertText, skin.getStyle(ButtonStyle.class));
+		dialog.row();
+		
+		Button dialogbutton = new Button(new Label("OK", skin), skin.getStyle(ButtonStyle.class));
+		dialog.add(dialogbutton);
+		dialogbutton.setClickListener(new ClickListener() {
+			
+			@Override
+			public void click(Actor actor, float x, float y) {
+				alert = null;
+				dialog.visible = false;
+			}
+		});
+		
+		dialog.height += 40;
+		dialog.x = ORIGINAL_WIDTH / 2 - dialog.width / 2;
+		dialog.y = ORIGINAL_HEIGHT - 200;
+		dialog.visible = false;
 		
 		Button soloButton = new Button(new Label("SOLO", skin), skin.getStyle(ButtonStyle.class));
 		Button createButton = new Button(new Label("CREATE GAME", skin), skin.getStyle(ButtonStyle.class));
@@ -126,6 +154,8 @@ public class MultidrawMenuScreen implements Screen {
 		table.x = 320 / 2 - table.width / 2;
 		table.y = 100;
 		stage.addActor(table);
+		
+		stage.addActor(dialog);
 	}
 
 	@Override
@@ -147,3 +177,4 @@ public class MultidrawMenuScreen implements Screen {
 	}
 
 }
+

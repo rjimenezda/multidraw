@@ -106,7 +106,7 @@ public class NativeJavaImpl implements NativeFunctions {
 							}
 						} else if (on.equals("endgame")) {
 							if (callbacks.containsKey(END_GAME_CALLBACK)) {
-								EndGameHandler handler = (EndGameHandler) callbacks.get(START_GAME_CALLBACK);
+								EndGameHandler handler = (EndGameHandler) callbacks.get(END_GAME_CALLBACK);
 								JSONObject rc = (JSONObject) arguments[0];
 								handler.onGameEnd(rc.getString("why"));
 								callbacks.remove(END_GAME_CALLBACK);
@@ -185,7 +185,7 @@ public class NativeJavaImpl implements NativeFunctions {
 	@Override
 	public void joinGame(String gameId, StartGameHandler handler, EndGameHandler endHandler) {
 		callbacks.put(START_GAME_CALLBACK, handler);
-		callbacks.put(END_GAME_CALLBACK, handler);
+		callbacks.put(END_GAME_CALLBACK, endHandler);
 		JSONObject args = factoryJSONUserInfo();
 		putJSON(args, "game_id", gameId);
 		

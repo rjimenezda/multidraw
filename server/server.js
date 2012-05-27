@@ -195,7 +195,7 @@ io.sockets.on('connection', function (socket) {
     if (game) {
       delete game.owner.game
       if (game.player) {
-        delete player.game
+        delete game.player.game
         io.sockets.socket(game.player.user_id).emit("endgame", { why: data.why})
       }
       delete_game(data.user_id)
@@ -228,6 +228,7 @@ io.sockets.on('connection', function (socket) {
         socket.emit('game_start')
       } else {
         console.log("ERROR: That game doesn't exist")
+        socket.emit("endgame", { why : "That game doesn't exist anymore" })
       } 
     }
 

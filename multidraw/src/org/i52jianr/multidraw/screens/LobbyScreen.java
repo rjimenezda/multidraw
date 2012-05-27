@@ -80,7 +80,7 @@ public class LobbyScreen implements Screen {
 		} else if (letsgo && !goBack){
 			game.setGameScreen();
 		} else if (goBack && !letsgo) {
-			game.setMenuScreen();
+			game.setMenuScreen(why);
 		}
 	}
 
