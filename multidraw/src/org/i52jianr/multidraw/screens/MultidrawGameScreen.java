@@ -134,7 +134,6 @@ public class MultidrawGameScreen implements Screen {
 		Gdx.gl.glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		
-		while(!flag);
 		// We could use event handlers in case of performance drop 
 		setSelectedColor();
 		handleInput();
@@ -175,7 +174,6 @@ public class MultidrawGameScreen implements Screen {
 		Gdx.input.setInputProcessor(stage);
 		// Weird alpha if not called wtf
 		drawingArea.clearArea();
-		flag = true; // Finished loading
 	}
 
 	@Override
