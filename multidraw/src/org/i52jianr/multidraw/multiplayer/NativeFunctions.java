@@ -1,4 +1,4 @@
-package org.i52jianr.multidraw;
+package org.i52jianr.multidraw.multiplayer;
 
 import org.i52jianr.multidraw.multiplayer.callbacks.DrawHandler;
 import org.i52jianr.multidraw.multiplayer.callbacks.EndGameHandler;

@@ -2,6 +2,7 @@ package org.i52jianr.multidraw;
 
 import java.util.Random;
 
+import org.i52jianr.multidraw.multiplayer.NativeFunctions;
 import org.i52jianr.multidraw.screens.GameListScreen;
 import org.i52jianr.multidraw.screens.LobbyScreen;
 import org.i52jianr.multidraw.screens.MultidrawGameScreen;

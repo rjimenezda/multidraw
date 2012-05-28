@@ -9,7 +9,6 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import org.i52jianr.multidraw.NativeFunctions;
 import org.i52jianr.multidraw.multiplayer.callbacks.DrawHandler;
 import org.i52jianr.multidraw.multiplayer.callbacks.EndGameHandler;
 import org.i52jianr.multidraw.multiplayer.callbacks.GetGamesHandler;
