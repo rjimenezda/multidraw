@@ -68,8 +68,8 @@ public abstract class MultidrawBaseGameScreen implements Screen {
 
 	@Override
 	public void dispose() {
+		stage.dispose();
 		drawingArea.dispose();
-		batch.dispose();
 	}
 
 	abstract void setupUI(final Skin skin);

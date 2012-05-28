@@ -10,7 +10,7 @@ import org.i52jianr.multidraw.multiplayer.callbacks.UserJoinsHandler;
 public interface NativeFunctions {	
 	void getGames(GetGamesHandler handler);
 
-	void createGame(UserJoinsHandler handler,  StartGameHandler startHandler);
+	void createGame(String gameName, UserJoinsHandler handler,  StartGameHandler startHandler);
 	
 	void joinGame(String gameId, StartGameHandler startHandler, EndGameHandler endHandler);
 	

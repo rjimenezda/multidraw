@@ -164,12 +164,12 @@ public class NativeJavaImpl implements NativeFunctions {
 	}
 
 	@Override
-	public void createGame(UserJoinsHandler handler, StartGameHandler startHandler) {
+	public void createGame(String gameName, UserJoinsHandler handler, StartGameHandler startHandler) {
 		
 		JSONObject args = new JSONObject();
 		try {
 			args.put("owner", userid);
-			args.put("name", "Test game name");
+			args.put("name", gameName);
 			args.put("username", username);
 			// Get a random word
 			args.put("word", "Dignity");

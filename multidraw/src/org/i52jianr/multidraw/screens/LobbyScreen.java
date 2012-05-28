@@ -1,5 +1,7 @@
 package org.i52jianr.multidraw.screens;
 
+import java.util.Random;
+
 import org.i52jianr.multidraw.Multidraw;
 import org.i52jianr.multidraw.multiplayer.User;
 import org.i52jianr.multidraw.multiplayer.callbacks.EndGameHandler;
@@ -7,6 +9,7 @@ import org.i52jianr.multidraw.multiplayer.callbacks.StartGameHandler;
 import org.i52jianr.multidraw.multiplayer.callbacks.UserJoinsHandler;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.TextInputListener;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL10;
@@ -104,9 +107,7 @@ public class LobbyScreen implements Screen {
 		SpriteBatch batch = new SpriteBatch();
 		cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		stage = new Stage(ORIGINAL_WIDTH, ORIGINAL_HEIGHT, true, batch);
-		
-		Gdx.input.setInputProcessor(stage);
-		
+				
 		final Button menu_button = new Button(new Image(manager.get("format-list-unordered.png", Texture.class), Scaling.fill), manager.get("data/uiskin.json", Skin.class));
 		menu_button.setClickListener(new ClickListener() {
 			
@@ -129,21 +130,44 @@ public class LobbyScreen implements Screen {
 		stage.addActor(state);
 		
 		if (creating) {
-			game.nat.createGame(new UserJoinsHandler() {
+			
+			final Random rand = new Random(System.currentTimeMillis());
+			
+			Gdx.input.getPlaceholderTextInput(new TextInputListener() {
+				
 				@Override
-				public void onUserJoined(User user) {
-					state.setText("Somebody Joined!!");
-					state.x = ORIGINAL_WIDTH / 2 - state.getTextBounds().width / 2;
-					state.y = ORIGINAL_HEIGHT - 100;
+				public void input(String text) {
+					
+					if (text.equals("")) {
+						text = "Game # " + rand.nextInt(1000);
+					}
+					
+					game.nat.createGame(text, new UserJoinsHandler() {
+						@Override
+						public void onUserJoined(User user) {
+							state.setText("Somebody Joined!!");
+							state.x = ORIGINAL_WIDTH / 2 - state.getTextBounds().width / 2;
+							state.y = ORIGINAL_HEIGHT - 100;
+						}
+					}, new StartGameHandler() {
+						// This is half OK, the owner should start the game
+						@Override
+						public void onGameStarted(String word) {
+							LobbyScreen.this.word = word;
+							letsgo = true;
+						}
+					});
+					
+					Gdx.input.setInputProcessor(stage);
 				}
-			}, new StartGameHandler() {
-				// This is partly OK, the owner should start the game
+				
 				@Override
-				public void onGameStarted(String word) {
-					LobbyScreen.this.word = word;
-					letsgo = true;
+				public void canceled() {
+					game.setMenuScreen("Enter a game name");
 				}
-			});
+			}, "Game name", "Your game name...");
+			
+			
 		}
 		
 		stage.addActor(menu_button);

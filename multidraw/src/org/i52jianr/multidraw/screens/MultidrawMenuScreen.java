@@ -50,10 +50,12 @@ public class MultidrawMenuScreen implements Screen {
 			dialog.visible = true;
 		}
 		
-		cam.update();
-		stage.getSpriteBatch().setProjectionMatrix(cam.combined);
-		stage.act(delta);
-		stage.draw();
+		if (cam != null && stage != null) {
+			cam.update();
+			stage.getSpriteBatch().setProjectionMatrix(cam.combined);
+			stage.act(delta);
+			stage.draw();	
+		}
 	}
 
 	@Override
@@ -72,7 +74,7 @@ public class MultidrawMenuScreen implements Screen {
 		Gdx.input.setInputProcessor(stage);
 		
 		alertText = new Label(alert == null ? "INFO" : alert, skin);
-		dialog = new Button(alertText, skin.getStyle(ButtonStyle.class));
+		dialog = new Button(alertText, skin);
 		dialog.row();
 		
 		Button dialogbutton = new Button(new Label("OK", skin), skin.getStyle(ButtonStyle.class));
@@ -86,6 +88,7 @@ public class MultidrawMenuScreen implements Screen {
 			}
 		});
 		
+		dialog.setStyle(skin.getStyle("checked", ButtonStyle.class));
 		dialog.height += 40;
 		dialog.x = ORIGINAL_WIDTH / 2 - dialog.width / 2;
 		dialog.y = ORIGINAL_HEIGHT - 200;
@@ -162,7 +165,6 @@ public class MultidrawMenuScreen implements Screen {
 
 	@Override
 	public void hide() {
-		
 	}
 
 	@Override
@@ -176,6 +178,7 @@ public class MultidrawMenuScreen implements Screen {
 
 	@Override
 	public void dispose() {
+		stage.dispose();
 	}
 
 }
