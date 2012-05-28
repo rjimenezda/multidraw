@@ -67,10 +67,14 @@ public class MultidrawGuessScreen extends MultidrawBaseGameScreen {
 				if (x == -1 && y == -1) {
 					drawingArea.removeLast();
 				} else {
-					drawingArea.setBrush(brushButtonsDesc.get(brush).getBrush());
-					setSelectedColor(new Color(r/255.0f, g/255.0f, b/255.0f, 1.0f));
+					if (brush == -1) {
+						drawingArea.clearArea();
+					} else {
+						drawingArea.setBrush(brushButtonsDesc.get(brush).getBrush());
+						setSelectedColor(new Color(r/255.0f, g/255.0f, b/255.0f, 1.0f));
 //					
-					drawingArea.drawAt(x, y);	
+						drawingArea.drawAt(x, y);
+					}
 				}
 				
 			}

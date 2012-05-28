@@ -193,7 +193,7 @@ public class MultidrawGameScreen extends MultidrawBaseGameScreen {
 										-1, 
 										-1, 
 										-1, 
-										-1);
+										0);
 			}
 		}
 	}
@@ -330,6 +330,7 @@ public class MultidrawGameScreen extends MultidrawBaseGameScreen {
 			
 			@Override
 			public void click(Actor actor, float x, float y) {
+				game.nat.draw(0, 0, 0, 0, 0, -1);
 				drawingArea.clearArea();
 			}
 		});
