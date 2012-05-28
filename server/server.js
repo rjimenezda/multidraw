@@ -2,6 +2,8 @@ var io = require('socket.io').listen(1234);
 
 /*
 
+Class definitions, just for reference
+
 Game
 {
   game_id : owner.id
@@ -22,8 +24,6 @@ Client
 
 */
 
-
-
 // Current games array.
 var games = new Array()
 
@@ -31,6 +31,7 @@ var games = new Array()
 var clients = new Array()
 
 // FIXTURES
+// This games won't work but are useful to test the Game List UI
 games.push({
   name : "Game #1",
   owner_name : "Rouman",
@@ -103,7 +104,7 @@ games.push({
   game_id : "herpasdf",
 })
 
-// Helper function to get an id
+// Helper function to get an user by id
 function get_user(user_id) {
   for (i in clients) {
     if (clients[i].user_id == user_id) {
@@ -113,6 +114,7 @@ function get_user(user_id) {
   console.log("ERROR: USER not found with id: ", user_id)
 }
 
+// Helper function to get a game by id
 function get_game(game_id) {
   for (i in games) {
     if (games[i].game_id == game_id) {
@@ -122,6 +124,7 @@ function get_game(game_id) {
   console.log("ERROR: GAME not found with id: ", game_id)
 }
 
+// Helper function to delete an game by id
 function delete_game(game_id) {
   index = -1
   for (i in games) {
@@ -131,6 +134,7 @@ function delete_game(game_id) {
   }
 }
 
+// This fires on each connection and socket is the socket for each user
 io.sockets.on('connection', function (socket) {
 
   console.log("Socket_id: " + socket.id)
@@ -138,6 +142,7 @@ io.sockets.on('connection', function (socket) {
   // We send the user_id, we don't store the user yet
   socket.emit('user_id', socket.id)
 
+  // User signs up
   socket.on('signup', function(data) {
 
     // The user sent his name, we save it now
@@ -156,6 +161,7 @@ io.sockets.on('connection', function (socket) {
     // console.log("Somebody wants to know what games are out there!")
     var rc = new Array()
 
+    // Send only games without player
     for (i in games) {
       if (games[i].player == undefined) {
        rc.push({
@@ -174,8 +180,10 @@ io.sockets.on('connection', function (socket) {
   socket.on('create_game', function(data) {
     console.log("Creating game...")
 
+    // Get the client
     client = get_user(data.owner)
 
+    // Create object
     game = {  
               game_id : client.user_id,
               owner : client,
@@ -185,17 +193,24 @@ io.sockets.on('connection', function (socket) {
               /* no players yet */ 
             }
 
-    games.push(game)
+    games[client.user_id] = game 
 
+    // Save it
+    // games.push(game)
+
+    // Circular references!
     client.game = game
   })
 
   // Owner quits game
   socket.on('end_game', function(data){
 
+    // Get the game
     game = get_game(data.game_id)
 
+    // Check game exists
     if (game) {
+      // Check who this is and emit properly
       if (data.user_id == game.owner.user_id) {
         if (game.player) {
           io.sockets.socket(game.player.user_id).emit("endgame", { why: data.why})
@@ -206,11 +221,8 @@ io.sockets.on('connection', function (socket) {
         }
       }
 
-      if (game.player) {
-        delete game.player.game
-      }
-      delete game.owner.game
-      delete_game(data.game_id)
+      // Cleaning up
+      delete games[data.game_id]
 
     } else {
       console.log("NO SUCH GAME")
@@ -221,27 +233,36 @@ io.sockets.on('connection', function (socket) {
   socket.on('join_game', function(data) {
     console.log("Somebody wants to join...")
 
+    // Wrong message
     if (!data.game_id) {
       console.log("ERROR: Trying to join a game without ID")
     } else {
+      // Get the game
       game = get_game(data.game_id)
 
+      // Check if game exists
       if (game) {
+        // Get the user object
         user = get_user(data.user_id)
 
+        // Set circular values
         game.player = user
         user.game = game
 
+        // Get the socket of the owner
         owner_socket = io.sockets.socket(game.owner)
 
+        // Tell him somebody joined
         owner_socket.emit("joined", { 
                                   username : data.username, 
                                   user_id : data.user_id
                                   })
 
+        // Start the game!!
         game.owner.user_socket.emit('game_start', { word : game.word })
         socket.emit('game_start', { word : game.word })
       } else {
+        // Log error and send endgame message
         console.log("ERROR: That game doesn't exist")
         socket.emit("endgame", { why : "That game doesn't exist anymore" })
       } 
@@ -252,10 +273,17 @@ io.sockets.on('connection', function (socket) {
   // Paint action
   socket.on('draw', function(data) {
     console.log("Drawing!!")
+    // Get user
     user = get_user(data.user_id)
+
+    // Check if user exists
     if (user) {
+      // Get the game
       game = user.game
+
+      // Check game exists
       if (game) {
+        // Send the player drawing information
         game.player.user_socket.emit("draw", {
           x : data.x,
 
@@ -277,6 +305,21 @@ io.sockets.on('connection', function (socket) {
   // Quit game
   socket.on('byebye', function(data) {
     console.log("Deleting session...")
+
+    user = get_user(data.user_id)
+
+    // Let's check if on a game yet
+    if (user.game){
+      game_id = user.game.game_id
+      if (user.game.owner == user && user.game.player != undefined) {
+        user.game.player.user_socket.emit("endgame", { why : "Server quit..."} )
+      } else if (user.game.player != undefined && user.game.player == user) {
+        user.game.owner.user_socket.emit("endgame", { why : "Player quit..."} )
+      }
+
+      delete_game(game_id)
+    }
+
     // Check if still in-game to notify
     delete clients[socket.id]
   })
