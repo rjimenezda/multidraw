@@ -38,6 +38,7 @@ public class MultidrawGuessScreen extends MultidrawBaseGameScreen {
 	private float scaleX = 1.0f;
 	private float scaleY = 1.0f;
 	private Label status;
+	private long gameStart;
 	
 	private ArrayList<BrushButtonDescriptor> brushButtonsDesc;
 		
@@ -82,6 +83,8 @@ public class MultidrawGuessScreen extends MultidrawBaseGameScreen {
 				MultidrawGuessScreen.this.game.setMenuScreen(why);
 			}
 		});
+		
+		gameStart = System.currentTimeMillis();
 	}
 	
 	@Override
@@ -161,6 +164,25 @@ public class MultidrawGuessScreen extends MultidrawBaseGameScreen {
 		status.y = OFFSET_Y + 70;
 		status.visible = false;
 		
+		final Button wonTheGame = new Button(new Label("Go Back", skin), skin.getStyle(ButtonStyle.class));
+		
+		wonTheGame.setClickListener(new ClickListener() {
+			
+			@Override
+			public void click(Actor actor, float x, float y) {
+				long time = System.currentTimeMillis() - gameStart;
+				time /= 1000;
+				game.nat.endGame("Player guessed the word!!\n Just " + time + " seconds, Wow!");
+				game.setMenuScreen();
+			}
+		});
+		
+		wonTheGame.x = ORIGINAL_WIDTH / 2 - wonTheGame.width / 2;
+		wonTheGame.y = OFFSET_Y + 20;
+		wonTheGame.visible = false;
+		
+		stage.addActor(wonTheGame);
+		
 		Button guessbutton = new Button(new Label("GUESS", skin), skin.getStyle(ButtonStyle.class));
 		
 		guessbutton.setClickListener(new ClickListener() {
@@ -176,7 +198,7 @@ public class MultidrawGuessScreen extends MultidrawBaseGameScreen {
 							// Yep, we're making a local check
 							if(text.toLowerCase().equals(word.toLowerCase())) {
 								setStatus("YOU WIN", Color.GREEN);
-								// Send command to network
+								wonTheGame.visible = true;
 							} else {
 								setStatus("WRONG", Color.RED);
 							}

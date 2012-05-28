@@ -38,7 +38,7 @@ public class NativeJavaImpl implements NativeFunctions {
 	public NativeJavaImpl() {
 		callbacks = new Hashtable<String, Object>();
 		try {
-			socket = new SocketIO("http://192.168.0.198:1234");
+			socket = new SocketIO("http://192.168.16.180:1234");
 			
 			socket.connect(new IOCallback() {
 				
