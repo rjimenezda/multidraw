@@ -30,6 +30,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider.SliderStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.tablelayout.Table;
 import com.badlogic.gdx.utils.Scaling;
 
+/**
+ * Specialization of {@link MultidrawBaseGameScreen} that allows users to draw and send over network or just play Solo
+ * @author Román Jiménez
+ *
+ */
 public class MultidrawGameScreen extends MultidrawBaseGameScreen {
 
 	private final int OFFSET_X = 31;
@@ -63,11 +68,20 @@ public class MultidrawGameScreen extends MultidrawBaseGameScreen {
 	private boolean online;
 	private boolean justTouched;
 	
+	/**
+	 * Constructor to play Solo, defaults the word to "Whatever you want"
+	 * @param game {@link Multidraw} instance to use
+	 */
 	public MultidrawGameScreen(Multidraw game) {
 		this(game, "Whatever you want");
 		online = false;
 	}
 	
+	/**
+	 * Constructor to play against someone
+	 * @param game {@link Multidraw} instance to use
+	 * @param word The word you shall draw
+	 */
 	public MultidrawGameScreen(Multidraw game, String word) {
 		super(game, word);
 		
@@ -148,6 +162,9 @@ public class MultidrawGameScreen extends MultidrawBaseGameScreen {
 	public void hide() {
 	}
 
+	/**
+	 * Helper method that is called on each frame to test touch events and draw accordingly
+	 */
 	private void handleInput() {
 		if (Gdx.input.isTouched()) {
 			int touchx = Gdx.input.getX();
@@ -230,6 +247,7 @@ public class MultidrawGameScreen extends MultidrawBaseGameScreen {
 		batch.dispose();
 	}
 
+	@Override
 	protected void setupUI(final Skin skin) {
 		Label red_label = new Label(skin);
 		red_label.setText("R");
@@ -363,11 +381,12 @@ public class MultidrawGameScreen extends MultidrawBaseGameScreen {
 		stage.addActor(buttonTable);
 	}
 
-	// Overloading is cool
+	@Override
 	protected void setSelectedColor() {
 		setSelectedColor(new Color(red_slider.getValue() / 255.0f, green_slider.getValue()  / 255.0f, blue_slider.getValue() / 255.0f, 1.0f));
 	}
 	
+	@Override
 	protected void setSelectedColor(Color color) {
 		colorPreview.setColor(color);
 		colorPreview.fill();

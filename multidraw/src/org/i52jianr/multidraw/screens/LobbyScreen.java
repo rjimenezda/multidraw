@@ -25,6 +25,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Scaling;
 
+/**
+ * This class represents a simple Lobby Screen where creators wait until someone joins
+ * @author Román Jiménez
+ *
+ */
 public class LobbyScreen implements Screen {
 
 	OrthographicCamera cam;
@@ -42,11 +47,22 @@ public class LobbyScreen implements Screen {
 	private String why;
 	protected String word;
 	
+	/**
+	 * Simple constructor with {@link Multidraw} instance and whether we create or not
+	 * @param game The {@link Multidraw} instance to use
+	 * @param creating whether we are creating or joining
+	 */
 	public LobbyScreen(Multidraw game, boolean creating) {
 		this.game = game;
 		this.creating = creating;
 	}
 	
+	/**
+	 * Constructor that takes a {@link Multidraw} instance, whether it creates and a Game Id 
+	 * @param game the {@link Multidraw} instance to use
+	 * @param creating whether we're creating the game or not
+	 * @param game_id The Game we are joining 's ID 
+	 */
 	public LobbyScreen(Multidraw game, boolean creating, String game_id) {
 		this.game = game;
 		this.creating = creating;
@@ -98,6 +114,10 @@ public class LobbyScreen implements Screen {
 		
 	}
 
+	/**
+	 * Sets the {@link AssetManager} to load resources from
+	 * @param manager The {@link AssetManager} to load
+	 */
 	public void setAssetManager(AssetManager manager) {
 		this.manager = manager;
 	}

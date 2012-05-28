@@ -19,6 +19,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.tablelayout.Table;
 
+/**
+ * First Screen that's shown, has a bunch of buttons to navigate
+ * @author Román Jiménez
+ *
+ */
 public class MultidrawMenuScreen implements Screen {
 	
 	private Multidraw game;
@@ -31,12 +36,21 @@ public class MultidrawMenuScreen implements Screen {
 	private Button dialog;
 	private Label alertText;
 
+	/**
+	 * Basic constructor, takes additional alert message to show
+	 * @param multidrawGame {@link Multidraw} screen to use
+	 * @param alert Text to show on a alert dialog
+	 */
 	public MultidrawMenuScreen(Multidraw multidrawGame, String alert) {
 		this.game = multidrawGame;
 		this.alert = alert;
 		this.game.nat.cleanCallbacks();
 	}
 
+	/**
+	 * Sets the {@link AssetManager} to load from 
+	 * @param manager The {@link AssetManager} to load from
+	 */
 	public void setAssetManager(AssetManager manager) {
 		this.manager = manager;
 	}

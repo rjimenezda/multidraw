@@ -11,7 +11,12 @@ import org.i52jianr.multidraw.multiplayer.callbacks.UserJoinsHandler;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
-
+/**
+ * HTML5 App launcher, uses {@link GwtApplication}
+ * Doesn't really work
+ * @author Román Jiménez de Andrés
+ *
+ */
 public class GwtLauncher extends GwtApplication implements NativeFunctions {
 	@Override
 	public GwtApplicationConfiguration getConfig () {
@@ -30,6 +35,10 @@ public class GwtLauncher extends GwtApplication implements NativeFunctions {
 		natTestNativeness();
 	}
 	
+	/**
+	 * Concept of what the GWT implementation should be like:
+	 * loads of helper JSNI methods.
+	 */
 	private native void natTestNativeness() /*-{
 		$wnd.console.log("Booting up Multidraw");
 	}-*/;

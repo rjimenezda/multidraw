@@ -26,7 +26,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Scaling;
-
+/**
+ * Specialization of {@link MultidrawBaseGameScreen} that receives draw data over the network and can guess a word
+ * @author Román Jiménez
+ *
+ */
 public class MultidrawGuessScreen extends MultidrawBaseGameScreen {
 
     private OrthographicCamera cam;
@@ -41,7 +45,12 @@ public class MultidrawGuessScreen extends MultidrawBaseGameScreen {
 	private long gameStart;
 	
 	private ArrayList<BrushButtonDescriptor> brushButtonsDesc;
-		
+	
+	/**
+	 * Constructor to play against someone
+	 * @param game {@link Multidraw} instance to use
+	 * @param word The word the player shall guess
+	 */
 	public MultidrawGuessScreen(Multidraw game, String word) {
 		super(game, word);
 		
@@ -159,6 +168,7 @@ public class MultidrawGuessScreen extends MultidrawBaseGameScreen {
 		batch.dispose();
 	}
 
+	@Override
 	protected void setupUI(final Skin skin) {
 		
 		status = new Label("WRONG", skin);
@@ -237,15 +247,22 @@ public class MultidrawGuessScreen extends MultidrawBaseGameScreen {
 		stage.addActor(menu_button);
 	}
 
+	@Override
 	protected void setSelectedColor() {
 		// Get code from last message received
 	}
 	
+	@Override
 	protected void setSelectedColor(Color color) {
 		// Get color from last message received
 		drawingArea.setColor(color);
 	}
 	
+	/**
+	 * Helper method to display a status message (win, wrong..etc)
+	 * @param text Text to be displayed
+	 * @param color The color the text will have
+	 */
 	private void setStatus(String text, Color color) {
 		status.setColor(color);
 		status.setText(text);

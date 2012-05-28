@@ -25,6 +25,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.tablelayout.Table;
 import com.badlogic.gdx.utils.Scaling;
 
+/**
+ * This class represents a Screen that shows a list of games from the server
+ * @author Román Jiménez
+ *
+ */
 public class GameListScreen implements Screen {
 
 	OrthographicCamera cam;
@@ -35,10 +40,18 @@ public class GameListScreen implements Screen {
 	private Multidraw game;
 	private AssetManager manager;
 	
+	/**
+	 * Contructor that takes an instance of {@link Multidraw}
+	 * @param game {@link Multidraw} instance to use
+	 */
 	public GameListScreen(Multidraw game) {
 		this.game = game;
 	}
 	
+	/**
+	 * Sets the {@link AssetManager} to get resources from 
+	 * @param manager An instance of {@link AssetManager} to get resources
+	 */
 	public void setAssetManager(AssetManager manager) {
 		this.manager = manager;
 	}

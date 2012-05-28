@@ -20,6 +20,11 @@ import org.json.JSONObject;
 
 import com.badlogic.gdx.Gdx;
 
+/**
+ * Implementation of {@link NativeFunctions}, manages network code and runs callbacks
+ * @author Román Jiménez
+ *
+ */
 public class NativeJavaImpl implements NativeFunctions {
 
 	private static final String USER_JOINS_CALLBACK = "user_joins";
@@ -34,6 +39,9 @@ public class NativeJavaImpl implements NativeFunctions {
 	
 	public Hashtable<String, Object> callbacks;
 	
+	/**
+	 * Basic Constructor that creates the connection and waits for events
+	 */
 	public NativeJavaImpl() {
 		callbacks = new Hashtable<String, Object>();
 		try {
@@ -246,7 +254,10 @@ public class NativeJavaImpl implements NativeFunctions {
 		gameId = null;
 	}
 	
-	/* Helper method */
+	/**
+	 * Helper method to generate a {@link JSONObject} with user data
+	 * @return a {@link JSONObject} with user data in it
+	 */
 	private JSONObject factoryJSONUserInfo() {
 		JSONObject args = new JSONObject();
 		try {
@@ -259,6 +270,12 @@ public class NativeJavaImpl implements NativeFunctions {
 		return args;
 	}
 	
+	/**
+	 * Helper method to put a string in a {@link JSONObject} without raising exceptions (awful)
+	 * @param obj {@link JSONObject} to put in
+	 * @param key The key of the string
+	 * @param value The value of the field
+	 */
 	private void putJSON(JSONObject obj, String key, String value) {
 		try {
 			obj.put(key, value);

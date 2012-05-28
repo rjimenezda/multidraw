@@ -13,6 +13,11 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
+/**
+ * Base class for actual Game Screens, defines a bunch of default stuff
+ * @author Román Jiménez
+ *
+ */
 public abstract class MultidrawBaseGameScreen implements Screen {
 
     protected OrthographicCamera cam;
@@ -33,6 +38,11 @@ public abstract class MultidrawBaseGameScreen implements Screen {
 	protected Multidraw game;
 	protected String word;
 	
+	/**
+	 * Basic Constructor, takes {@link Multidraw} instance and word to guess
+	 * @param game
+	 * @param word
+	 */
 	public MultidrawBaseGameScreen(Multidraw game, String word) {
 		canvasSize = 256; // Default
 		
@@ -40,6 +50,10 @@ public abstract class MultidrawBaseGameScreen implements Screen {
 		this.word = word;
 	}
 	
+	/**
+	 * Sets the {@link AssetManager} to load resources from
+	 * @param manager The {@link AssetManager} to load from
+	 */
 	public void setAssetManager(AssetManager manager) {
 		this.manager = manager; 
 	}
@@ -72,11 +86,21 @@ public abstract class MultidrawBaseGameScreen implements Screen {
 		drawingArea.dispose();
 	}
 
+	/**
+	 * Setup the Stage UI
+	 * @param skin {@link Skin} instance (called from show method)
+	 */
 	abstract void setupUI(final Skin skin);
 
-	// Overloading is cool
+	/**
+	 * Set the {@link DrawingArea} {@link Color} based on current input
+	 */
 	abstract void setSelectedColor();
 	
+	/**
+	 * Set the {@link Color} for the {@link DrawingArea} 
+	 * @param color {@link Color} to set the {@link DrawingArea}
+	 */
 	abstract void setSelectedColor(Color color);
 
 }

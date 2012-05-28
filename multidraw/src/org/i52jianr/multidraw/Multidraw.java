@@ -17,6 +17,11 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
+/**
+ * Main Game Class, extends from {@link Game} and is responsible for navigation and asset loading
+ * @author Román Jiménez
+ *
+ */
 public class Multidraw extends Game {
 	
 	private MultidrawMenuScreen menuScreen;
@@ -25,6 +30,10 @@ public class Multidraw extends Game {
 	private String username;
 	private AssetManager manager;
 	
+	/**
+	 * Constructor that takes an instance of {@link NativeFunctions}
+	 * @param nat instance of {@link NativeFunctions} to use
+	 */
 	public Multidraw(NativeFunctions nat) {
 		this.nat = nat;
 	}
@@ -91,28 +100,45 @@ public class Multidraw extends Game {
 		// Profit!
 	}
 	
+	/**
+	 * Sets the current screen to a new {@link MultidrawGameScreen}
+	 */
 	public void setGameScreen() {
 		MultidrawGameScreen game = new MultidrawGameScreen(this); 
 		game.setAssetManager(manager);
 		setScreen(game);
 	}
 	
+	/**
+	 * Sets the current screen to a new {@link MultidrawGuessScreen}
+	 */
 	public void setGuessScreen(String word) {
 		MultidrawGuessScreen game = new MultidrawGuessScreen(this, word); 
 		game.setAssetManager(manager);
 		setScreen(game);
 	}
 	
+	/**
+	 * Sets the current screen to a new {@link MultidrawGameScreen} with a word
+	 * @param word the word to draw
+	 */
 	public void setGameScreen(String word) {
 		MultidrawGameScreen game = new MultidrawGameScreen(this, word); 
 		game.setAssetManager(manager);
 		setScreen(game);
 	}
 	
+	/**
+	 * Sets the current screen to a {@link MultidrawMenuScreen}
+	 */
 	public void setMenuScreen() {
 		setMenuScreen(null);
 	}
 	
+	/**
+	 * Sets the current Screen to a 
+	 * @param why Alert message to display on the menu
+	 */
 	public void setMenuScreen(String why) {
 		MultidrawMenuScreen screen = new MultidrawMenuScreen(this, why);
 		screen.setAssetManager(manager);
@@ -120,6 +146,10 @@ public class Multidraw extends Game {
 		setScreen(screen);
 	}
 	
+	/**
+	 * Sets the current screen to a new {@link LobbyScreen}
+	 * @param creating whether we're creating the game or not
+	 */
 	public void setLobbyScreen(boolean creating) {
 		LobbyScreen screen = new LobbyScreen(this, creating);
 		screen.setAssetManager(manager);
@@ -127,6 +157,11 @@ public class Multidraw extends Game {
 		setScreen(screen);
 	}
 	
+	/**
+	 * Sets the current screen to a new {@link LobbyScreen} with a game_id
+	 * @param creating whether we're creating the game or not
+	 * @param game_id Id of the game we are connecting to
+	 */
 	public void setLobbyScreen(boolean creating, String game_id) {
 		LobbyScreen screen = new LobbyScreen(this, creating, game_id);
 		screen.setAssetManager(manager);
@@ -134,6 +169,9 @@ public class Multidraw extends Game {
 		setScreen(screen);
 	}
 	
+	/**
+	 * Sets the current screen to a new {@link GameListScreen}
+	 */
 	public void setGameListScreen() {
 		GameListScreen screen = new GameListScreen(this);
 		screen.setAssetManager(manager);
