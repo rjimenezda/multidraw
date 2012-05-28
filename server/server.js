@@ -157,12 +157,14 @@ io.sockets.on('connection', function (socket) {
     var rc = new Array()
 
     for (i in games) {
-      rc.push({
+      if (games[i].player == undefined) {
+       rc.push({
         name : games[i].name,
         owner_name : games[i].owner_name,
         game_id : games[i].game_id,
         word : games[i].word
       })
+     }
     }
 
     socket.emit("current_games", rc)
@@ -270,22 +272,6 @@ io.sockets.on('connection', function (socket) {
       console.log("That's no user!!")
     }
     
-  })
-
-  // Maybe I won't use these...
-  socket.on('color', function(data) {
-    console.log('Changed the color to: ', data)
-  })
-
-  socket.on('brush', function(data) {
-    console.log('Changed the brush to: ', data.brush)
-  })
-
-  socket.on('guess', function(data) {
-    // Maybe do this on the client?
-    if (data.word.toLowerCase() == game.word.toLowerCase()) {
-
-    }
   })
 
   // Quit game
